@@ -1,0 +1,4050 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoxNova AI Studio — استوديو الصوت والموسيقى الذكي</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-black: #06050a;
+      --bg-card: rgba(16, 13, 24, 0.84);
+      --bg-card-solid: #110e1a;
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --accent-red: #ff2247;
+      --accent-red-soft: rgba(255, 34, 71, 0.22);
+      --accent-purple: #9333ea;
+      --accent-purple-light: #c084fc;
+      --accent-purple-soft: rgba(147, 51, 234, 0.25);
+      --text-white: #f8f7fc;
+      --text-muted: #a19bb5;
+    }
+
+    * {
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(147, 51, 234, 0.5) #0b0912;
+    }
+
+    body {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 65% 45% at 15% 0%, rgba(147, 51, 234, 0.22), transparent 65%),
+        radial-gradient(ellipse 55% 45% at 88% 8%, rgba(255, 34, 71, 0.18), transparent 65%),
+        radial-gradient(ellipse 50% 40% at 50% 100%, rgba(147, 51, 234, 0.14), transparent 70%);
+    }
+
+    .glass-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .neon-border-purple {
+      border-color: rgba(168, 85, 247, 0.45);
+      box-shadow: 0 0 24px rgba(147, 51, 234, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .neon-border-red {
+      border-color: rgba(255, 34, 71, 0.5);
+      box-shadow: 0 0 24px rgba(255, 34, 71, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #ff2247 0%, #9333ea 100%);
+      color: #ffffff;
+      transition: all 0.22s ease;
+      box-shadow: 0 6px 20px rgba(255, 34, 71, 0.28), 0 0 14px rgba(147, 51, 234, 0.28);
+    }
+    .btn-gradient:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 26px rgba(255, 34, 71, 0.4), 0 0 20px rgba(147, 51, 234, 0.4);
+    }
+    .btn-gradient:active {
+      transform: translateY(0);
+    }
+
+    .btn-surface {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      color: #f8f7fc;
+      transition: all 0.2s ease;
+    }
+    .btn-surface:hover {
+      background: rgba(147, 51, 234, 0.18);
+      border-color: rgba(192, 132, 252, 0.45);
+    }
+
+    .btn-surface.active-red {
+      background: rgba(255, 34, 71, 0.22);
+      border-color: #ff2247;
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(255, 34, 71, 0.3);
+    }
+
+    .btn-surface.active-purple {
+      background: rgba(147, 51, 234, 0.28);
+      border-color: #a855f7;
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(147, 51, 234, 0.35);
+    }
+
+    @keyframes pulseRecord {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 34, 71, 0.75); }
+      50% { box-shadow: 0 0 0 14px rgba(255, 34, 71, 0); }
+    }
+    .recording-pulse {
+      animation: pulseRecord 1.2s infinite;
+      background: #ff2247 !important;
+      border-color: #ff6b84 !important;
+    }
+
+    @keyframes shimmerGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .brand-gradient-text {
+      background: linear-gradient(90deg, #ffffff 0%, #ff4769 45%, #c084fc 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmerGlow 6s ease infinite;
+    }
+
+    /* Custom sleek sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255, 34, 71, 0.45), rgba(147, 51, 234, 0.55));
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #ff2247;
+      box-shadow: 0 0 10px rgba(255, 34, 71, 0.7);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+      border-color: #c084fc;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #ff2247;
+      box-shadow: 0 0 10px rgba(255, 34, 71, 0.7);
+    }
+
+    .tab-btn {
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(255, 34, 71, 0.24), rgba(147, 51, 234, 0.3));
+      border-color: rgba(192, 132, 252, 0.55);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(147, 51, 234, 0.25);
+    }
+
+    .preset-card {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+    .preset-card:hover {
+      background: rgba(147, 51, 234, 0.15);
+      border-color: rgba(192, 132, 252, 0.45);
+      transform: translateY(-1px);
+    }
+    .preset-card.selected {
+      background: linear-gradient(135deg, rgba(255, 34, 71, 0.22), rgba(147, 51, 234, 0.28));
+      border-color: #ff2247;
+      box-shadow: 0 0 18px rgba(255, 34, 71, 0.24);
+    }
+
+    .lyric-line {
+      transition: all 0.25s ease;
+      border-right: 3px solid transparent;
+    }
+    .lyric-line.active-lyric {
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.25), rgba(255, 34, 71, 0.22));
+      border-right-color: #ff2247;
+      color: #ffffff;
+      transform: scale(1.01);
+    }
+
+    .toast-enter {
+      animation: toastSlide 0.28s ease forwards;
+    }
+    @keyframes toastSlide {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .vu-bar-fill {
+      transition: width 0.05s linear;
+      will-change: width;
+    }
+    #waveformCanvas {
+      touch-action: none;
+      will-change: transform;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-purple-600 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff2247] to-[#9333ea] flex items-center justify-center shadow-lg shadow-purple-900/40 shrink-0">
+          <i data-lucide="audio-waveform" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-black tracking-tight brand-gradient-text">VoxNova AI Studio</h1>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">PRO</span>
+          </div>
+          <p class="text-[11px] text-zinc-400 leading-none mt-0.5">تسجيل • تحسين • تغيير صوت • مساعد ذكي • صانع موسيقى</p>
+        </div>
+      </div>
+
+      <!-- Quick Live Readouts & Actions -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/50 border border-white/10 text-xs">
+          <span class="text-zinc-400">النغمة:</span>
+          <span id="pitchNoteDisplay" class="font-bold text-purple-300 min-w-[36px] text-center">--</span>
+          <span class="text-white/15">|</span>
+          <span class="text-zinc-400">الحالة:</span>
+          <span id="engineStatusBadge" class="font-bold text-white">جاهز</span>
+        </div>
+
+        <button id="btnMetronome" class="btn-surface px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5" title="مترونوم إيقاعي للتسجيل">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-300"></i>
+          <span>مترونوم</span>
+        </button>
+
+        <button id="btnABCompare" class="btn-surface px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5" title="مقارنة الصوت الأصلي مع المعدل">
+          <i data-lucide="split" class="w-3.5 h-3.5 text-red-400"></i>
+          <span id="abCompareLabel">المؤثرات: مفعلة</span>
+        </button>
+
+        <button id="btnToggleIO" class="btn-surface px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border-purple-500/40" title="إعدادات الميكروفون والسماعات وجودة التصدير">
+          <i data-lucide="headphones" class="w-3.5 h-3.5 text-purple-300"></i>
+          <span>المنافذ I/O</span>
+        </button>
+
+        <button id="btnExportWav" class="btn-gradient px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>تصدير WAV</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-5 py-4 space-y-4">
+
+    <!-- Top Studio Deck: Recorder + Interactive Waveform + Live Spectrum -->
+    <section class="glass-panel rounded-2xl p-4 neon-border-purple">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <!-- Transport Controls -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="btnRecord" class="btn-surface px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border-red-500/50 hover:bg-red-500/20">
+            <span id="recDot" class="w-3 h-3 rounded-full bg-[#ff2247] inline-block"></span>
+            <span id="recLabel">تسجيل</span>
+          </button>
+
+          <button id="btnPlayPause" class="btn-gradient px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            <span id="playLabel">تشغيل</span>
+          </button>
+
+          <button id="btnStop" class="btn-surface p-2 rounded-xl" title="إيقاف">
+            <i data-lucide="square" class="w-4 h-4 text-white"></i>
+          </button>
+
+          <button id="btnLoop" class="btn-surface p-2 rounded-xl" title="تكرار تلقائي">
+            <i data-lucide="repeat" class="w-4 h-4 text-zinc-300"></i>
+          </button>
+
+          <label class="btn-surface px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer" title="رفع ملف صوتي من جهازك">
+            <i data-lucide="upload" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>رفع صوت</span>
+            <input id="fileUploadInput" type="file" accept="audio/*" class="hidden" />
+          </label>
+
+          <button id="btnLoadDemo" class="btn-surface px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5" title="توليد عينة صوتية تجريبية لاختبار المؤثرات فوراً">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>عينة تجريبية</span>
+          </button>
+        </div>
+
+        <!-- Timer & Track Name -->
+        <div class="flex items-center gap-3">
+          <div class="text-left sm:text-right">
+            <div id="currentClipName" class="text-xs font-bold text-purple-300">عينة استوديو جاهزة للاختبار</div>
+            <div class="text-lg font-black font-mono tracking-wider text-white">
+              <span id="timeCurrent">00:00.0</span>
+              <span class="text-zinc-500 text-xs mx-1">/</span>
+              <span id="timeTotal" class="text-zinc-400 text-sm">00:00.0</span>
+            </div>
+          </div>
+
+          <!-- Stereo VU Meter -->
+          <div class="hidden sm:flex flex-col gap-1 w-28 bg-black/60 p-2 rounded-xl border border-white/10">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] text-zinc-400 font-bold">L</span>
+              <div class="flex-1 h-2 bg-zinc-900 rounded-full overflow-hidden">
+                <div id="vuLeft" class="vu-bar-fill h-full w-0 bg-gradient-to-l from-[#ff2247] via-[#9333ea] to-white rounded-full"></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] text-zinc-400 font-bold">R</span>
+              <div class="flex-1 h-2 bg-zinc-900 rounded-full overflow-hidden">
+                <div id="vuRight" class="vu-bar-fill h-full w-0 bg-gradient-to-l from-[#ff2247] via-[#9333ea] to-white rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro Audio Input & Output Routing Panel (Collapsible) -->
+      <div id="audioIOPanel" class="hidden mb-3 rounded-xl bg-black/65 border border-purple-500/35 p-3.5 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="cable" class="w-4 h-4 text-red-400"></i>
+            <span class="text-xs font-extrabold text-white">إعدادات مستقبلات ومخرجات الصوت الاحترافية (Audio I/O)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="peakDbDisplay" class="text-[11px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-purple-200">Peak: -∞ dB</span>
+            <span id="clipLed" class="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-900 border border-white/10 text-zinc-400">CLIP</span>
+            <button id="btnRefreshDevices" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1">
+              <i data-lucide="refresh-cw" class="w-3 h-3 text-purple-300"></i>
+              <span>تحديث الأجهزة</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <!-- Microphone Input Receiver -->
+          <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/10 space-y-2">
+            <label class="font-bold text-red-400 flex items-center gap-1.5">
+              <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+              مستقبل الصوت (الميكروفون)
+            </label>
+            <select id="inputDeviceSelect" class="w-full rounded-lg bg-[#120e1d] border border-white/15 px-2 py-1.5 text-xs text-white focus:border-red-500 focus:outline-none">
+              <option value="default">الميكروفون الافتراضي للنظام</option>
+            </select>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-zinc-300">كسب الميكروفون (Preamp Gain)</span>
+                <span id="micGainVal" class="font-mono text-red-400">100%</span>
+              </div>
+              <input id="micGainSlider" type="range" min="40" max="220" step="5" value="100" />
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1 text-[11px] text-zinc-300">
+              <label class="flex items-center gap-1 cursor-pointer"><input id="chkEchoCancel" type="checkbox" checked class="accent-purple-500" /><span>منع الصدى</span></label>
+              <label class="flex items-center gap-1 cursor-pointer"><input id="chkHwDenoise" type="checkbox" class="accent-purple-500" /><span>عزل ميكروفون</span></label>
+              <label class="flex items-center gap-1 cursor-pointer"><input id="chkAutoGain" type="checkbox" class="accent-purple-500" /><span>توازن تلقائي</span></label>
+            </div>
+          </div>
+
+          <!-- Audio Output Device & Monitoring Profile -->
+          <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/10 space-y-2">
+            <label class="font-bold text-purple-300 flex items-center gap-1.5">
+              <i data-lucide="speaker" class="w-3.5 h-3.5"></i>
+              مخرج الصوت (السماعات)
+            </label>
+            <select id="outputDeviceSelect" class="w-full rounded-lg bg-[#120e1d] border border-white/15 px-2 py-1.5 text-xs text-white focus:border-purple-500 focus:outline-none">
+              <option value="default">مخرج الصوت الافتراضي</option>
+            </select>
+            <div>
+              <label class="text-[11px] text-zinc-300 block mb-1">معايرة المخرج (Output Profile)</label>
+              <select id="outputProfileSelect" class="w-full rounded-lg bg-[#120e1d] border border-white/15 px-2 py-1.5 text-xs text-white focus:border-purple-500 focus:outline-none">
+                <option value="flat">استوديو متوازن (Studio Flat)</option>
+                <option value="headphones">سماعات رأس (Headphones Clarity)</option>
+                <option value="speakers">مكبر صوت (Speakers Bass Safe)</option>
+                <option value="mobile">سماعة موبايل (Mobile Vocal Boost)</option>
+              </select>
+            </div>
+            <div class="text-[10px] text-zinc-400">محدّد الأمان (Brickwall Limiter -1.5dB) مفعل لحماية المخرج من التشويه</div>
+          </div>
+
+          <!-- Export Quality & Loudness Mastering -->
+          <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/10 space-y-2">
+            <label class="font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="file-audio" class="w-3.5 h-3.5 text-red-400"></i>
+              جودة التصدير والمخرجات
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] text-zinc-400 block mb-0.5">دقة البت</label>
+                <select id="exportBitDepth" class="w-full rounded-lg bg-[#120e1d] border border-white/15 px-2 py-1 text-xs text-white">
+                  <option value="16">WAV 16-bit (قياسي)</option>
+                  <option value="24" selected>WAV 24-bit (استوديو)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] text-zinc-400 block mb-0.5">القنوات</label>
+                <select id="exportChannels" class="w-full rounded-lg bg-[#120e1d] border border-white/15 px-2 py-1 text-xs text-white">
+                  <option value="2" selected>ستيريو (Stereo)</option>
+                  <option value="1">مونو (Mono)</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] text-zinc-400 block mb-0.5">هدف علو الصوت (Loudness Target)</label>
+              <select id="exportLoudness" class="w-full rounded-lg bg-[#120e1d] border border-white/15 px-2 py-1 text-xs text-white">
+                <option value="raw">بدون تغيير (Original)</option>
+                <option value="podcast" selected>بودكاست ومنصات (-16 LUFS)</option>
+                <option value="youtube">يوتيوب وسبوتيفاي (-14 LUFS)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Interactive Canvas: Waveform + Real-time Spectrum -->
+      <div class="relative rounded-xl overflow-hidden bg-[#07050c] border border-white/10">
+        <canvas id="waveformCanvas" class="w-full h-36 sm:h-44 block cursor-crosshair"></canvas>
+        <div class="absolute top-2 left-2 flex items-center gap-1.5 pointer-events-none">
+          <span id="selectionBadge" class="text-[11px] bg-black/75 border border-purple-500/40 text-purple-200 px-2.5 py-0.5 rounded-full">
+            اسحب على الموجة لتحديد جزء للقص أو التعديل
+          </span>
+        </div>
+        <div class="absolute top-2 right-2 flex items-center gap-1.5">
+          <button id="btnVisualizerMode" class="text-[11px] bg-black/75 hover:bg-purple-900/60 border border-white/15 text-white px-2.5 py-0.5 rounded-full transition">
+            طيف + موجة
+          </button>
+        </div>
+      </div>
+
+      <!-- Waveform Editing Toolbar -->
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button id="btnTrimKeep" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="الاحتفاظ بالجزء المحدد فقط">
+            <i data-lucide="crop" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>قص للمحدد</span>
+          </button>
+          <button id="btnCutSelection" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="حذف الجزء المحدد">
+            <i data-lucide="scissors" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>حذف المحدد</span>
+          </button>
+          <button id="btnFadeIn" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>تلاشي دخول</span>
+          </button>
+          <button id="btnFadeOut" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="trending-down" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>تلاشي خروج</span>
+          </button>
+          <button id="btnNormalize" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-white"></i>
+            <span>توحيد الصوت</span>
+          </button>
+          <button id="btnTrimSilence" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="volume-x" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>إزالة الصمت</span>
+          </button>
+          <button id="btnReverse" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+            <i data-lucide="refresh-ccw" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>عكس الصوت</span>
+          </button>
+          <button id="btnDuplicate" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="تكرار المقطع مرتين">
+            <i data-lucide="copy-plus" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>تكرار ×2</span>
+          </button>
+          <button id="btnAutoLevel" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="موازنة تلقائية للأجزاء الهادئة والعالية">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>موازنة ذكية</span>
+          </button>
+          <button id="btnNoiseGate" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="بوابة صمت لإزالة الهمهمة بين الكلمات">
+            <i data-lucide="filter-x" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>بوابة ضوضاء</span>
+          </button>
+          <button id="btnVocalIsolate" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="عزل وتركيز الصوت البشري في المنتصف">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-white"></i>
+            <span>عزل الصوت</span>
+          </button>
+          <button id="btnAddMarker" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="إضافة علامة زمنية للعودة السريعة">
+            <i data-lucide="bookmark-plus" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>علامة</span>
+          </button>
+          <button id="btnUndo" class="btn-surface px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" title="تراجع (Ctrl+Z)">
+            <i data-lucide="undo-2" class="w-3.5 h-3.5 text-zinc-300"></i>
+            <span>تراجع</span>
+          </button>
+        </div>
+
+        <!-- Master Volume & Speed quick sliders -->
+        <div class="flex items-center gap-4 text-xs">
+          <div class="flex items-center gap-2 w-32">
+            <i data-lucide="volume-2" class="w-4 h-4 text-purple-300 shrink-0"></i>
+            <input id="masterVolume" type="range" min="0" max="1.8" step="0.02" value="1" />
+            <span id="masterVolumeVal" class="font-mono text-[11px] w-9 text-left">100%</span>
+          </div>
+          <div class="flex items-center gap-2 w-32">
+            <i data-lucide="gauge" class="w-4 h-4 text-red-400 shrink-0"></i>
+            <input id="playbackSpeed" type="range" min="0.5" max="1.8" step="0.05" value="1" />
+            <span id="playbackSpeedVal" class="font-mono text-[11px] w-9 text-left">1.0x</span>
+          </div>
+        </div>
+      </div>
+      <!-- Quick Waveform Markers Bar -->
+      <div id="markersBar" class="hidden mt-2 pt-2 border-t border-white/5 flex items-center gap-1.5 flex-wrap text-[11px]"></div>
+    </section>
+
+    <!-- Main 2-Column Studio Grid: Left/Main Feature Tabs + Right Persistent AI Audio Assistant -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+      <!-- Feature Modules (8 cols on desktop) -->
+      <div class="lg:col-span-8 space-y-4">
+        <!-- Module Navigation Tabs -->
+        <nav class="glass-panel p-1.5 rounded-2xl flex flex-wrap gap-1.5">
+          <button data-tab="enhance" class="tab-btn active flex-1 min-w-[115px] py-2 px-3 rounded-xl border border-transparent text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5">
+            <i data-lucide="sliders" class="w-4 h-4 text-purple-300"></i>
+            <span>تحسين الصوت</span>
+          </button>
+          <button data-tab="voice" class="tab-btn flex-1 min-w-[115px] py-2 px-3 rounded-xl border border-transparent text-xs sm:text-sm font-bold text-zinc-300 hover:text-white flex items-center justify-center gap-1.5">
+            <i data-lucide="wand-2" class="w-4 h-4 text-red-400"></i>
+            <span>تغيير الصوت</span>
+          </button>
+          <button data-tab="music" class="tab-btn flex-1 min-w-[130px] py-2 px-3 rounded-xl border border-transparent text-xs sm:text-sm font-bold text-zinc-300 hover:text-white flex items-center justify-center gap-1.5">
+            <i data-lucide="music" class="w-4 h-4 text-purple-300"></i>
+            <span>موسيقى من الكلمات</span>
+          </button>
+          <button data-tab="extras" class="tab-btn flex-1 min-w-[115px] py-2 px-3 rounded-xl border border-transparent text-xs sm:text-sm font-bold text-zinc-300 hover:text-white flex items-center justify-center gap-1.5">
+            <i data-lucide="layers" class="w-4 h-4 text-red-400"></i>
+            <span>مكتبة ومؤثرات</span>
+          </button>
+        </nav>
+
+        <!-- TAB 1: Audio Enhancement & Studio Mastering -->
+        <section id="tab-enhance" class="tab-panel glass-panel rounded-2xl p-4 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+                محرك التحسين والماسترنج الاحترافي
+              </h2>
+              <p class="text-xs text-zinc-400">اختر قالباً جاهزاً أو عدّل المعادل الصوتي (EQ) وعزل الضوضاء والضغط بدقة</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnAutoMaster" class="btn-gradient px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5" title="تحليل الصوت وضبط أفضل إعدادات التحسين تلقائياً">
+                <i data-lucide="wand-sparkles" class="w-3.5 h-3.5"></i>
+                <span>ماسترنج ذكي AI</span>
+              </button>
+              <button id="btnResetEnhance" class="btn-surface px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-red-400"></i>
+                <span>إعادة ضبط</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Studio Enhance Presets (8 Pro Profiles) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="enhancePresetGrid">
+            <button data-enhance-preset="clean" class="preset-card selected rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">✨</div>
+              <div class="text-xs font-bold text-white">صافي ونقي</div>
+              <div class="text-[10px] text-zinc-400">توازن طبيعي</div>
+            </button>
+            <button data-enhance-preset="podcast" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">🎙️</div>
+              <div class="text-xs font-bold text-white">بودكاست برو</div>
+              <div class="text-[10px] text-zinc-400">دفء ووضوح</div>
+            </button>
+            <button data-enhance-preset="vocal" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">🎤</div>
+              <div class="text-xs font-bold text-white">استوديو غنائي</div>
+              <div class="text-[10px] text-zinc-400">لمعان وصدى خفيف</div>
+            </button>
+            <button data-enhance-preset="cinema" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">🎬</div>
+              <div class="text-xs font-bold text-white">تعليق سينمائي</div>
+              <div class="text-[10px] text-zinc-400">عمق وفخامة</div>
+            </button>
+            <button data-enhance-preset="radio" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">📻</div>
+              <div class="text-xs font-bold text-white">إذاعة FM</div>
+              <div class="text-[10px] text-zinc-400">ضغط وحضور قوي</div>
+            </button>
+            <button data-enhance-preset="youtube" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">🎥</div>
+              <div class="text-xs font-bold text-white">يوتيوب / صناع محتوى</div>
+              <div class="text-[10px] text-zinc-400">حضور ووضوح فائق</div>
+            </button>
+            <button data-enhance-preset="poetry" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">🌙</div>
+              <div class="text-xs font-bold text-white">إلقاء / تلاوة</div>
+              <div class="text-[10px] text-zinc-400">دفء وصدى راقٍ</div>
+            </button>
+            <button data-enhance-preset="meeting" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-lg mb-0.5">💼</div>
+              <div class="text-xs font-bold text-white">اجتماع واضح</div>
+              <div class="text-[10px] text-zinc-400">عزل وتشبع كلامي</div>
+            </button>
+          </div>
+
+          <!-- 5-Band Equalizer -->
+          <div class="bg-black/45 rounded-xl p-3.5 border border-white/10">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-purple-300">المعادل الصوتي (5-Band Equalizer)</span>
+              <span class="text-[11px] text-zinc-400">-12 dB إلى +12 dB</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/5">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-zinc-200">البيز 60Hz</span>
+                  <span id="eq60Val" class="font-mono text-red-400">0 dB</span>
+                </div>
+                <input id="eq60" type="range" min="-12" max="12" step="0.5" value="0" />
+              </div>
+              <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/5">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-zinc-200">الدفء 250Hz</span>
+                  <span id="eq250Val" class="font-mono text-purple-300">0 dB</span>
+                </div>
+                <input id="eq250" type="range" min="-12" max="12" step="0.5" value="0" />
+              </div>
+              <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/5">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-zinc-200">الحضور 1kHz</span>
+                  <span id="eq1000Val" class="font-mono text-white">0 dB</span>
+                </div>
+                <input id="eq1000" type="range" min="-12" max="12" step="0.5" value="0" />
+              </div>
+              <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/5">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-zinc-200">الوضوح 4kHz</span>
+                  <span id="eq4000Val" class="font-mono text-purple-300">0 dB</span>
+                </div>
+                <input id="eq4000" type="range" min="-12" max="12" step="0.5" value="0" />
+              </div>
+              <div class="bg-white/[0.03] rounded-xl p-2.5 border border-white/5">
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span class="font-bold text-zinc-200">اللمعان 12kHz</span>
+                  <span id="eq12000Val" class="font-mono text-red-400">0 dB</span>
+                </div>
+                <input id="eq12000" type="range" min="-12" max="12" step="0.5" value="0" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Restoration & Dynamics -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-400"></i>
+                  عزل الضوضاء والهواء
+                </span>
+                <span id="denoiseVal" class="text-xs font-mono text-purple-300">0%</span>
+              </div>
+              <input id="denoiseSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">فلتر High-Pass + تقليل الهمهمة الخلفية</p>
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="activity" class="w-3.5 h-3.5 text-red-400"></i>
+                  ضاغط الاستوديو (Compressor)
+                </span>
+                <span id="compressorVal" class="text-xs font-mono text-red-400">0%</span>
+              </div>
+              <input id="compressorSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">توازن فوري بين الصوت الهادئ والمرتفع</p>
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="flame" class="w-3.5 h-3.5 text-purple-400"></i>
+                  دفء وتشبع تناغمي
+                </span>
+                <span id="warmthVal" class="text-xs font-mono text-purple-300">0%</span>
+              </div>
+              <input id="warmthSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">تشبع أنبوبي دافئ يبرز جمال النبرة</p>
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="feather" class="w-3.5 h-3.5 text-red-400"></i>
+                  تخفيف حرف السين (De-Esser)
+                </span>
+                <span id="deesserVal" class="text-xs font-mono text-red-400">0%</span>
+              </div>
+              <input id="deesserSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">ينعّم الصفير وحدّة الحروف عند 6.5kHz</p>
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="wind" class="w-3.5 h-3.5 text-purple-400"></i>
+                  إزالة الفرقعات (Pop Filter)
+                </span>
+                <span id="deplosiveVal" class="text-xs font-mono text-purple-300">0%</span>
+              </div>
+              <input id="deplosiveSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">يعزل فرقعات الهواء وحروف الباء والفاء</p>
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-red-400"></i>
+                  بريق ونقاء (Air Exciter)
+                </span>
+                <span id="exciterVal" class="text-xs font-mono text-red-400">0%</span>
+              </div>
+              <input id="exciterSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">يضيف لمعاناً استوديو ناعماً للتفاصيل العليا</p>
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10 sm:col-span-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="radio" class="w-3.5 h-3.5 text-purple-400"></i>
+                  اتساع الستيريو المكاني (Stereo Widener)
+                </span>
+                <span id="stereoWidthVal" class="text-xs font-mono text-purple-300">0%</span>
+              </div>
+              <input id="stereoWidthSlider" type="range" min="0" max="100" step="1" value="0" />
+              <p class="text-[10px] text-zinc-400 mt-1">يوسّع المجال الصوتي المكاني ليمنح الصوت عمقاً وفخامة في السماعات</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: Voice Changer & Creative FX -->
+        <section id="tab-voice" class="tab-panel hidden glass-panel rounded-2xl p-4 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                <i data-lucide="wand-2" class="w-4 h-4 text-red-400"></i>
+                مغيّر الصوت والمؤثرات الإبداعية
+              </h2>
+              <p class="text-xs text-zinc-400">حوّل صوتك بضغطة واحدة أو صمّم تأثيراً مخصصاً بالصدى والروبوت والترددات</p>
+            </div>
+            <button id="btnResetVoice" class="btn-surface px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-purple-300"></i>
+              <span>صوت طبيعي</span>
+            </button>
+          </div>
+
+          <!-- Voice Changer Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2" id="voicePresetGrid">
+            <button data-voice-preset="normal" class="preset-card selected rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🗣️</div>
+              <div class="text-xs font-bold text-white">طبيعي</div>
+            </button>
+            <button data-voice-preset="robot" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🤖</div>
+              <div class="text-xs font-bold text-white">روبوت</div>
+            </button>
+            <button data-voice-preset="deep" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🦁</div>
+              <div class="text-xs font-bold text-white">عميق / عملاق</div>
+            </button>
+            <button data-voice-preset="chipmunk" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🐿️</div>
+              <div class="text-xs font-bold text-white">سنجاب / كارتون</div>
+            </button>
+            <button data-voice-preset="alien" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">👽</div>
+              <div class="text-xs font-bold text-white">فضائي</div>
+            </button>
+            <button data-voice-preset="cave" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🏔️</div>
+              <div class="text-xs font-bold text-white">كهف / ملعب</div>
+            </button>
+            <button data-voice-preset="telephone" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">☎️</div>
+              <div class="text-xs font-bold text-white">هاتف قديم</div>
+            </button>
+            <button data-voice-preset="vintage" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">📼</div>
+              <div class="text-xs font-bold text-white">راديو كلاسيك</div>
+            </button>
+            <button data-voice-preset="dark" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">👻</div>
+              <div class="text-xs font-bold text-white">همس مرعب</div>
+            </button>
+            <button data-voice-preset="singer" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🌟</div>
+              <div class="text-xs font-bold text-white">نجم غناء</div>
+            </button>
+            <button data-voice-preset="choir" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">🎶</div>
+              <div class="text-xs font-bold text-white">كورال هارموني</div>
+            </button>
+            <button data-voice-preset="megaphone" class="preset-card rounded-xl p-2.5 text-center">
+              <div class="text-xl mb-0.5">📢</div>
+              <div class="text-xs font-bold text-white">ميكروفون قوي</div>
+            </button>
+          </div>
+
+          <!-- Fine FX Sliders -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">طبقة الصوت (Pitch)</span>
+                <span id="pitchVal" class="font-mono text-red-400">0 نصف نغمة</span>
+              </div>
+              <input id="pitchSlider" type="range" min="-10" max="10" step="0.5" value="0" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">صدى القاعة (Reverb)</span>
+                <span id="reverbVal" class="font-mono text-purple-300">0%</span>
+              </div>
+              <input id="reverbSlider" type="range" min="0" max="100" step="1" value="0" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">ترديد الإيكو (Delay)</span>
+                <span id="delayVal" class="font-mono text-red-400">0%</span>
+              </div>
+              <input id="delaySlider" type="range" min="0" max="85" step="1" value="0" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">زمن الترديد (Echo Time)</span>
+                <span id="delayTimeVal" class="font-mono text-purple-300">0.28s</span>
+              </div>
+              <input id="delayTimeSlider" type="range" min="0.08" max="0.85" step="0.02" value="0.28" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">معدّل الروبوت (Ring Mod)</span>
+                <span id="robotVal" class="font-mono text-red-400">0%</span>
+              </div>
+              <input id="robotSlider" type="range" min="0" max="100" step="1" value="0" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">تشويه / روك (Distortion)</span>
+                <span id="distortionVal" class="font-mono text-purple-300">0%</span>
+              </div>
+              <input id="distortionSlider" type="range" min="0" max="100" step="1" value="0" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">كورال غنائي (Chorus)</span>
+                <span id="chorusVal" class="font-mono text-red-400">0%</span>
+              </div>
+              <input id="chorusSlider" type="range" min="0" max="100" step="1" value="0" />
+            </div>
+
+            <div class="bg-black/45 rounded-xl p-3 border border-white/10">
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="font-bold text-white">توزيع ستيريو (Pan)</span>
+                <span id="panVal" class="font-mono text-purple-300">وسط</span>
+              </div>
+              <input id="panSlider" type="range" min="-1" max="1" step="0.05" value="0" />
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: AI Music Generator From Song Lyrics -->
+        <section id="tab-music" class="tab-panel hidden glass-panel rounded-2xl p-4 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                <i data-lucide="music" class="w-4 h-4 text-purple-400"></i>
+                صانع الموسيقى الذكي من كلمات الأغنية
+              </h2>
+              <p class="text-xs text-zinc-400">اكتب كلمات أغنيتك وسيحلل التطبيق المشاعر والإيقاع ويؤلف لحناً وتوزيعاً موسيقياً متكاملاً</p>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button data-lyric-sample="romantic" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-semibold">رومانسي</button>
+              <button data-lyric-sample="rap" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-semibold">راب / حماسي</button>
+              <button data-lyric-sample="sad" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-semibold">حزين / نهاوند</button>
+              <button data-lyric-sample="oriental" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-semibold">شرقي مبهج</button>
+              <button id="btnAiLyrics" class="btn-gradient px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1"><i data-lucide="pen-tool" class="w-3 h-3"></i><span>توليد كلمات AI</span></button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Lyrics Input -->
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-purple-300 block">كلمات الأغنية</label>
+              <textarea id="lyricsInput" rows="6" class="w-full rounded-xl bg-black/60 border border-white/15 focus:border-purple-500 focus:outline-none p-3 text-sm text-white leading-relaxed resize-none" placeholder="اكتب كلمات أغنيتك هنا (سطر لكل شطر)...">في ليل المدينة والنجوم بتحكي حكايتنا
+نبض القلوب بيغني على أوتار محبتنا
+لو غابت الشمس ضيك يملا سمانا نور
+وعشانك أنسى كل خوف وكل جرح يدور</textarea>
+
+              <div class="flex flex-wrap gap-2">
+                <button id="btnComposeMusic" class="btn-gradient flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <span>تحليل الكلمات وتأليف الموسيقى</span>
+                </button>
+                <button id="btnPlayMusic" class="btn-surface py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5">
+                  <i data-lucide="play" class="w-4 h-4 text-red-400"></i>
+                  <span id="musicPlayLabel">تشغيل اللحن</span>
+                </button>
+                <button id="btnRegenMelody" class="btn-surface py-2 px-3 rounded-xl text-xs font-bold flex items-center gap-1" title="توليد لحن جديد مختلف لنفس الكلمات">
+                  <i data-lucide="shuffle" class="w-3.5 h-3.5 text-purple-300"></i>
+                  <span>تنويع</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Music Analysis & Synced Karaoke Display -->
+            <div class="bg-black/50 rounded-xl p-3 border border-white/10 flex flex-col justify-between space-y-3">
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-white/[0.04] rounded-lg p-2 border border-white/5">
+                  <div class="text-[10px] text-zinc-400">المزاج المكتشف</div>
+                  <div id="musicMoodBadge" class="text-xs font-extrabold text-red-400 mt-0.5">رومانسي دافئ</div>
+                </div>
+                <div class="bg-white/[0.04] rounded-lg p-2 border border-white/5">
+                  <div class="text-[10px] text-zinc-400">المقام / السلم</div>
+                  <div id="musicScaleBadge" class="text-xs font-extrabold text-purple-300 mt-0.5">نهاوند</div>
+                </div>
+                <div class="bg-white/[0.04] rounded-lg p-2 border border-white/5">
+                  <div class="text-[10px] text-zinc-400">السرعة</div>
+                  <div id="musicBpmBadge" class="text-xs font-extrabold text-white mt-0.5">96 BPM</div>
+                </div>
+              </div>
+
+              <!-- Synced Karaoke Lyrics Box -->
+              <div id="karaokeBox" class="flex-1 max-h-36 overflow-y-auto space-y-1 pr-1 text-xs text-zinc-300">
+                <!-- Populated dynamically -->
+              </div>
+
+              <div class="flex items-center justify-between gap-2 pt-1 border-t border-white/10">
+                <button id="btnRecordOverMusic" class="btn-surface flex-1 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border-red-500/40">
+                  <i data-lucide="mic" class="w-3.5 h-3.5 text-red-400"></i>
+                  <span>سجّل صوتك فوق اللحن</span>
+                </button>
+                <button id="btnMixVocalMusic" class="btn-surface flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 border-purple-500/40">
+                  <i data-lucide="disc-3" class="w-3.5 h-3.5 text-purple-300"></i>
+                  <span>دمج الصوت + الموسيقى</span>
+                </button>
+                <button id="btnExportBeatWav" class="btn-surface py-1.5 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1" title="تصدير اللحن الموسيقي فقط كملف WAV">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-white"></i>
+                  <span>WAV</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Music Style, Scale, BPM & Track Mixer -->
+          <div class="bg-black/45 rounded-xl p-3.5 border border-white/10 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[11px] text-zinc-400 block mb-1">النمط الموسيقي (Genre)</label>
+                <select id="musicGenreSelect" class="w-full rounded-lg bg-[#141020] border border-white/15 px-2.5 py-1.5 text-xs text-white focus:border-purple-500 focus:outline-none">
+                  <option value="oriental">بوب شرقي حديث</option>
+                  <option value="trap">تراب / راب حماسي</option>
+                  <option value="lofi">لو-فاي هادئ (Lo-Fi)</option>
+                  <option value="ballad">بالاد رومانسي حزين</option>
+                  <option value="cinematic">سينمائي ملحمي</option>
+                  <option value="synthwave">سينثويف إلكتروني</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[11px] text-zinc-400 block mb-1">المقام الموسيقي</label>
+                <select id="musicScaleSelect" class="w-full rounded-lg bg-[#141020] border border-white/15 px-2.5 py-1.5 text-xs text-white focus:border-purple-500 focus:outline-none">
+                  <option value="nahawand">نهاوند (Harmonic Minor)</option>
+                  <option value="hijaz">حجاز (Phrygian Dominant)</option>
+                  <option value="kurd">كورد (Phrygian)</option>
+                  <option value="minor">مينور عاطفي (Natural Minor)</option>
+                  <option value="major">ماجور مبهج (Major)</option>
+                  <option value="pentatonic">خماسي هادئ (Pentatonic)</option>
+                </select>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] mb-1">
+                  <span class="text-zinc-400">سرعة الإيقاع (BPM)</span>
+                  <span id="musicBpmVal" class="font-mono text-purple-300">96 BPM</span>
+                </div>
+                <input id="musicBpmSlider" type="range" min="65" max="150" step="1" value="96" />
+              </div>
+            </div>
+
+            <!-- 4-Stem Mixer -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 border-t border-white/10 text-xs">
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-zinc-300">إيقاع (Drums)</span><span id="mixDrumsVal" class="font-mono text-red-400">80%</span></div>
+                <input id="mixDrums" type="range" min="0" max="100" value="80" />
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-zinc-300">بيز (Bass)</span><span id="mixBassVal" class="font-mono text-purple-300">75%</span></div>
+                <input id="mixBass" type="range" min="0" max="100" value="75" />
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-zinc-300">كوردات (Chords)</span><span id="mixChordsVal" class="font-mono text-white">70%</span></div>
+                <input id="mixChords" type="range" min="0" max="100" value="70" />
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-zinc-300">اللحن (Melody)</span><span id="mixMelodyVal" class="font-mono text-purple-300">85%</span></div>
+                <input id="mixMelody" type="range" min="0" max="100" value="85" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: Takes Library, Soundboard SFX & Teleprompter -->
+        <section id="tab-extras" class="tab-panel hidden glass-panel rounded-2xl p-4 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Takes Library -->
+            <div class="bg-black/45 rounded-xl p-3.5 border border-white/10 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-extrabold text-white flex items-center gap-1.5">
+                  <i data-lucide="folder-open" class="w-4 h-4 text-purple-400"></i>
+                  مكتبة التسجيلات والمقاطع
+                </h3>
+                <button id="btnSaveTake" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-bold text-purple-200">+ حفظ الحالي</button>
+              </div>
+              <div id="takesList" class="space-y-1.5 max-h-52 overflow-y-auto">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Instant Studio Soundboard -->
+            <div class="bg-black/45 rounded-xl p-3.5 border border-white/10 space-y-2.5">
+              <h3 class="text-sm font-extrabold text-white flex items-center gap-1.5">
+                <i data-lucide="zap" class="w-4 h-4 text-red-400"></i>
+                لوحة المؤثرات الفورية (Soundboard)
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <button data-sfx="boom" class="preset-card rounded-xl p-2.5 text-center">
+                  <div class="text-lg">💥</div>
+                  <div class="text-[11px] font-bold">ضربة سينمائية</div>
+                </button>
+                <button data-sfx="whoosh" class="preset-card rounded-xl p-2.5 text-center">
+                  <div class="text-lg">🌪️</div>
+                  <div class="text-[11px] font-bold">انتقال سريع</div>
+                </button>
+                <button data-sfx="chime" class="preset-card rounded-xl p-2.5 text-center">
+                  <div class="text-lg">✨</div>
+                  <div class="text-[11px] font-bold">رنين سحري</div>
+                </button>
+                <button data-sfx="applause" class="preset-card rounded-xl p-2.5 text-center">
+                  <div class="text-lg">👏</div>
+                  <div class="text-[11px] font-bold">تصفيق جمهور</div>
+                </button>
+                <button data-sfx="laser" class="preset-card rounded-xl p-2.5 text-center">
+                  <div class="text-lg">⚡</div>
+                  <div class="text-[11px] font-bold">ليزر رقمي</div>
+                </button>
+                <button data-sfx="heartbeat" class="preset-card rounded-xl p-2.5 text-center">
+                  <div class="text-lg">❤️</div>
+                  <div class="text-[11px] font-bold">نبض درامي</div>
+                </button>
+              </div>
+              <p class="text-[10px] text-zinc-400">اضغط على أي مؤثر لتشغيله فوراً أثناء العرض أو التسجيل</p>
+            </div>
+          </div>
+
+          <!-- Ambient Background Soundscape Generator -->
+          <div class="bg-black/45 rounded-xl p-3.5 border border-white/10 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-sm font-extrabold text-white flex items-center gap-1.5">
+                <i data-lucide="cloud-rain" class="w-4 h-4 text-purple-400"></i>
+                الأجواء الصوتية الخلفية (Ambient Layer)
+              </h3>
+              <div class="flex items-center gap-2 w-40 text-xs">
+                <span class="text-zinc-400 text-[11px]">المستوى:</span>
+                <input id="ambientVolume" type="range" min="0" max="100" value="35" />
+                <span id="ambientVolumeVal" class="font-mono text-[11px] text-purple-300 w-8">35%</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="ambientGrid">
+              <button data-ambient="rain" class="preset-card rounded-xl p-2 text-center flex items-center justify-center gap-1.5">
+                <span>🌧️</span><span class="text-xs font-bold">مطر هادئ</span>
+              </button>
+              <button data-ambient="vinyl" class="preset-card rounded-xl p-2 text-center flex items-center justify-center gap-1.5">
+                <span>📀</span><span class="text-xs font-bold">فينيل Lo-Fi</span>
+              </button>
+              <button data-ambient="wind" class="preset-card rounded-xl p-2 text-center flex items-center justify-center gap-1.5">
+                <span>🌙</span><span class="text-xs font-bold">نسيم الليل</span>
+              </button>
+              <button data-ambient="pink" class="preset-card rounded-xl p-2 text-center flex items-center justify-center gap-1.5">
+                <span>🎧</span><span class="text-xs font-bold">تركيز هادئ</span>
+              </button>
+            </div>
+            <div class="text-[10px] text-zinc-400 flex flex-wrap gap-x-3 gap-y-1 pt-1 border-t border-white/5">
+              <span>اختصارات سريعة:</span>
+              <span><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono">Space</kbd> تشغيل/إيقاف</span>
+              <span><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono">R</kbd> تسجيل</span>
+              <span><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono">L</kbd> تكرار</span>
+              <span><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono">Ctrl+Z</kbd> تراجع</span>
+            </div>
+          </div>
+
+          <!-- Teleprompter for Voiceover / Lyrics -->
+          <div class="bg-black/45 rounded-xl p-3.5 border border-white/10 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-extrabold text-white flex items-center gap-1.5">
+                <i data-lucide="scroll-text" class="w-4 h-4 text-purple-400"></i>
+                شاشة القراءة التلقائية (Teleprompter)
+              </h3>
+              <button id="btnTogglePrompter" class="btn-surface px-3 py-1 rounded-lg text-xs font-bold">تشغيل التمرير</button>
+            </div>
+            <textarea id="prompterText" rows="3" class="w-full rounded-xl bg-black/60 border border-white/10 p-2.5 text-sm text-white leading-relaxed focus:outline-none focus:border-purple-500">أهلاً بكم في استوديو VoxNova الذكي! يمكنك هنا قراءة نص البودكاست أو كلمات الأغنية بوضوح أثناء التسجيل بينما يقوم المحرك الصوتي بتنقية صوتك وإضافة لمسة احترافية فورية.</textarea>
+          </div>
+        </section>
+      </div>
+
+      <!-- Persistent AI Smart Audio Assistant (4 cols on desktop) -->
+      <aside class="lg:col-span-4 glass-panel rounded-2xl p-4 neon-border-red flex flex-col h-[540px] lg:h-[600px]">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#9333ea] to-[#ff2247] flex items-center justify-center shadow-lg">
+              <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-extrabold text-white">المساعد الصوتي الذكي AI</h2>
+              <p class="text-[11px] text-purple-300">اوصف التعديل المطلوب وسأطبقه فوراً</p>
+            </div>
+          </div>
+          <button id="btnAiUndo" class="btn-surface px-2.5 py-1 rounded-lg text-[11px] font-semibold" title="تراجع عن آخر تعديل ذكي">تراجع</button>
+        </div>
+
+        <!-- Quick AI Command Chips -->
+        <div class="py-2.5 flex flex-wrap gap-1.5 border-b border-white/5">
+          <button data-ai-cmd="نضف الصوت من الدوشة وخليه زي البودكاست الاحترافي" class="text-[11px] px-2.5 py-1 rounded-full bg-purple-500/15 hover:bg-purple-500/30 border border-purple-500/35 text-purple-200 transition">🎙️ نضفه زي البودكاست</button>
+          <button data-ai-cmd="خلي صوتي عميق وفخم زي المعلقين السينمائيين مع شوية صدى" class="text-[11px] px-2.5 py-1 rounded-full bg-red-500/15 hover:bg-red-500/30 border border-red-500/35 text-red-200 transition">🎬 عميق سينمائي</button>
+          <button data-ai-cmd="حول صوتي لروبوت فضائي مع صدى وترديد" class="text-[11px] px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/15 border border-white/15 text-zinc-200 transition">🤖 روبوت فضائي</button>
+          <button data-ai-cmd="خلي صوتي زي استوديو الغناء وزود اللمعان والصدى الخفيف" class="text-[11px] px-2.5 py-1 rounded-full bg-purple-500/15 hover:bg-purple-500/30 border border-purple-500/35 text-purple-200 transition">🎤 صوت غنائي</button>
+          <button data-ai-cmd="اعمل تلاشي في البداية والنهاية ووحد مستوى الصوت" class="text-[11px] px-2.5 py-1 rounded-full bg-red-500/15 hover:bg-red-500/30 border border-red-500/35 text-red-200 transition">✨ تلاشي وتوحيد</button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="aiChatMessages" class="flex-1 overflow-y-auto py-3 space-y-2.5 text-xs">
+          <div class="bg-purple-950/45 border border-purple-500/30 rounded-2xl rounded-tr-sm p-3 text-zinc-100 leading-relaxed">
+            أهلاً بك في <strong class="text-white">VoxNova AI</strong>! أنا مهندس الصوت الذكي الخاص بك. اكتب لي أي وصف بالعامية أو الفصحى مثل:
+            <div class="mt-1.5 text-purple-200/90 space-y-0.5">
+              • "زود البيز شوية وقلل الضوضاء"
+              <br>• "خلي صوتي زي السنجاب وأسرع شوية"
+              <br>• "اعكس الصوت وضيف صدى كهف"
+              <br>• "ألف موسيقى حزينة لكلماتي"
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input Form -->
+        <form id="aiChatForm" class="pt-2.5 border-t border-white/10 flex items-center gap-1.5">
+          <button type="button" id="btnAiVoiceCmd" class="btn-surface p-2.5 rounded-xl shrink-0" title="تحدث بالصوت للمساعد الذكي">
+            <i data-lucide="mic" class="w-4 h-4 text-red-400"></i>
+          </button>
+          <input id="aiChatInput" type="text" class="flex-1 rounded-xl bg-black/65 border border-white/15 focus:border-red-500 focus:outline-none px-3 py-2.5 text-xs text-white placeholder-zinc-500" placeholder="اوصف التعديل أو اضغط الميكروفون..." autocomplete="off" />
+          <button type="submit" class="btn-gradient p-2.5 rounded-xl shrink-0" title="تطبيق التعديل الذكي">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-4 left-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // =========================================================================
+      // CORE AUDIO STATE & PARAMETERS
+      // =========================================================================
+      let audioCtx = null;
+      let currentBuffer = null;
+      let undoStack = [];
+      let takesLibrary = [];
+      let activeSource = null;
+      let isPlaying = false;
+      let isLooping = false;
+      let isBypassed = false;
+      let playStartTime = 0;
+      let playOffset = 0;
+      let selStart = 0; // 0..1
+      let selEnd = 1;   // 0..1
+      let isDraggingSel = false;
+      let visualizerMode = 0; // 0: both, 1: spectrum, 2: wave
+
+      // Recording state
+      let mediaRecorder = null;
+      let mediaStream = null;
+      let recordedChunks = [];
+      let isRecording = false;
+      let liveMicAnalyser = null;
+      let recStartTime = 0;
+      let recTimerInterval = null;
+
+      // Metronome state
+      let metronomeActive = false;
+      let metronomeInterval = null;
+      let metronomeBeat = 0;
+
+      // Prompter state
+      let prompterInterval = null;
+
+      // Real-time DSP nodes (for live playback updates)
+      let liveNodes = null;
+      let masterAnalyserL = null;
+      let masterAnalyserR = null;
+      let masterAnalyserMain = null;
+      let reverbIRBuffer = null;
+
+      // Effect parameters
+      const defaultParams = () => ({
+        eq60: 0,
+        eq250: 0,
+        eq1000: 0,
+        eq4000: 0,
+        eq12000: 0,
+        denoise: 0,
+        compressor: 0,
+        warmth: 0,
+        deesser: 0,    // 0..100
+        deplosive: 0,  // 0..100
+        exciter: 0,    // 0..100
+        stereoWidth: 0,// 0..100
+        pitch: 0,      // semitones -10..10
+        reverb: 0,     // 0..100
+        delay: 0,      // 0..85
+        delayTime: 0.28,
+        robot: 0,      // 0..100
+        distortion: 0, // 0..100
+        chorus: 0,     // 0..100
+        pan: 0,        // -1..1
+        voiceFilter: 'none', // 'none' | 'telephone' | 'vintage' | 'dark' | 'megaphone'
+        speed: 1.0,
+        volume: 1.0
+      });
+
+      // Ambient soundscape state
+      let ambientState = { active: null, gainNode: null, nodes: [], volume: 0.35 };
+
+      // Audio I/O & Markers state
+      let ioConfig = {
+        inputDeviceId: 'default',
+        outputDeviceId: 'default',
+        outputProfile: 'flat',
+        micGain: 1.0,
+        echoCancellation: true,
+        noiseSuppression: false,
+        autoGainControl: false
+      };
+      let waveMarkers = [];
+      let lastPeakDbText = '';
+
+      // High-performance rendering cache & reusable typed arrays (zero per-frame GC!)
+      const cachedWaveCanvas = document.createElement('canvas');
+      const cachedWaveCtx = cachedWaveCanvas.getContext('2d');
+      let waveCacheDirty = true;
+      let needsRedraw = true;
+      let lastPitchCheckMs = 0;
+      let lastPitchText = '--';
+      let lastTimeText = '';
+      let lastVuL = -1;
+      let lastVuR = -1;
+      const reusableFreqBins = new Uint8Array(512);
+      const reusableTimeL = new Uint8Array(128);
+      const reusableTimeR = new Uint8Array(128);
+      const reusablePitchBuf = new Float32Array(1024);
+
+      let params = defaultParams();
+      let prevParamsSnapshot = null;
+
+      // Music Composer State
+      const musicState = {
+        isPlaying: false,
+        step: 0,
+        timerId: null,
+        bpm: 96,
+        genre: 'oriental',
+        scale: 'nahawand',
+        mood: 'رومانسي دافئ',
+        rootMidi: 57, // A3
+        melodyPattern: [0, 2, 3, 5, 4, 3, 2, 0, 0, 3, 5, 7, 5, 4, 2, 0],
+        chordProgression: [[0, 2, 4], [5, 7, 9], [3, 5, 7], [4, 6, 8]],
+        mix: { drums: 0.8, bass: 0.75, chords: 0.7, melody: 0.85 },
+        lyricLines: []
+      };
+
+      const SCALES = {
+        nahawand: [0, 2, 3, 5, 7, 8, 11, 12],
+        hijaz: [0, 1, 4, 5, 7, 8, 10, 12],
+        kurd: [0, 1, 3, 5, 7, 8, 10, 12],
+        minor: [0, 2, 3, 5, 7, 8, 10, 12],
+        major: [0, 2, 4, 5, 7, 9, 11, 12],
+        pentatonic: [0, 3, 5, 7, 10, 12, 15, 17]
+      };
+
+      const SCALE_LABELS = {
+        nahawand: 'نهاوند',
+        hijaz: 'حجاز',
+        kurd: 'كورد',
+        minor: 'مينور عاطفي',
+        major: 'ماجور مبهج',
+        pentatonic: 'خماسي هادئ'
+      };
+
+      // =========================================================================
+      // HELPERS & TOAST
+      // =========================================================================
+      function ensureAudioCtx() {
+        if (!audioCtx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AC();
+          reverbIRBuffer = createImpulseResponse(audioCtx, 2.4, 2.6);
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function showToast(msg, type = 'purple') {
+        const container = document.getElementById('toastContainer');
+        const el = document.createElement('div');
+        const borderClass = type === 'red' ? 'border-red-500/60 bg-red-950/90' : 'border-purple-500/60 bg-[#181128]/95';
+        el.className = `toast-enter pointer-events-auto px-4 py-2.5 rounded-xl border ${borderClass} text-white text-xs font-bold shadow-2xl flex items-center gap-2 max-w-xs`;
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(8px)';
+          el.style.transition = 'all 0.25s ease';
+          setTimeout(() => el.remove(), 260);
+        }, 3000);
+      }
+
+      function formatTime(sec) {
+        if (!isFinite(sec) || sec < 0) sec = 0;
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        const d = Math.floor((sec % 1) * 10);
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${d}`;
+      }
+
+      function midiToFreq(midi) {
+        return 440 * Math.pow(2, (midi - 69) / 12);
+      }
+
+      function setStatus(text) {
+        const el = document.getElementById('engineStatusBadge');
+        if (el) el.textContent = text;
+      }
+
+      // =========================================================================
+      // IMPULSE RESPONSE & DISTORTION CURVE GENERATORS
+      // =========================================================================
+      function createImpulseResponse(ctx, duration, decay) {
+        const rate = ctx.sampleRate;
+        const length = Math.floor(rate * duration);
+        const impulse = ctx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+          const data = impulse.getChannelData(ch);
+          for (let i = 0; i < length; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+          }
+        }
+        return impulse;
+      }
+
+      function makeDistortionCurve(amount) {
+        if (!amount || amount <= 0.5) return null; // True bit-exact bypass: ZERO distortion!
+        const drive = 1 + (amount / 100) * 14;
+        const norm = Math.tanh(drive);
+        const n = 8192;
+        const curve = new Float32Array(n);
+        for (let i = 0; i < n; i++) {
+          const x = (i * 2) / (n - 1) - 1;
+          curve[i] = Math.tanh(x * drive) / norm;
+        }
+        return curve;
+      }
+
+      // =========================================================================
+      // DEMO SAMPLE AUDIO SYNTHESIZER (Instant testing without mic)
+      // =========================================================================
+      function generateDemoAudioBuffer() {
+        const ctx = ensureAudioCtx();
+        const sr = ctx.sampleRate;
+        const duration = 5.2;
+        const length = Math.floor(sr * duration);
+        const buffer = ctx.createBuffer(1, length, sr);
+        const data = buffer.getChannelData(0);
+
+        // Rich vocal-formant-like melodic phrase so EQ, Reverb, Robot, Pitch are super audible!
+        const notes = [
+          { f: 196.0, start: 0.15, dur: 0.75 },
+          { f: 220.0, start: 0.95, dur: 0.65 },
+          { f: 233.08, start: 1.65, dur: 0.85 },
+          { f: 293.66, start: 2.55, dur: 0.9 },
+          { f: 261.63, start: 3.5, dur: 0.7 },
+          { f: 220.0, start: 4.25, dur: 0.8 }
+        ];
+
+        for (let i = 0; i < length; i++) {
+          const t = i / sr;
+          let sample = 0;
+          for (let n = 0; n < notes.length; n++) {
+            const note = notes[n];
+            if (t >= note.start && t <= note.start + note.dur) {
+              const lt = t - note.start;
+              const env = Math.min(1, lt / 0.06) * Math.min(1, (note.dur - lt) / 0.12);
+              const vib = 1 + 0.008 * Math.sin(2 * Math.PI * 5.2 * lt);
+              const f = note.f * vib;
+              // Stacked harmonics mimicking warm human vocal timbre
+              sample += env * (
+                0.50 * Math.sin(2 * Math.PI * f * lt) +
+                0.26 * Math.sin(2 * Math.PI * f * 2 * lt) +
+                0.14 * Math.sin(2 * Math.PI * f * 3 * lt) +
+                0.08 * Math.sin(2 * Math.PI * f * 5 * lt) +
+                0.04 * Math.sin(2 * Math.PI * f * 7 * lt)
+              );
+            }
+          }
+          // Subtle room air for realistic denoise demonstration
+          const air = (Math.random() * 2 - 1) * 0.006;
+          data[i] = Math.max(-0.95, Math.min(0.95, sample * 0.55 + air));
+        }
+        return buffer;
+      }
+
+      // =========================================================================
+      // BUILD DSP AUDIO GRAPH (Works for both Realtime & Offline Rendering)
+      // =========================================================================
+      function buildDSPChain(ctx, sourceNode, destinationNode, p, bypassed, irBuf) {
+        if (bypassed) {
+          const bypassGain = ctx.createGain();
+          bypassGain.gain.value = p.volume;
+          sourceNode.connect(bypassGain);
+          bypassGain.connect(destinationNode);
+          return { masterGain: bypassGain };
+        }
+
+        // 1. High-Pass Denoise + De-Plosive Sub-Cut
+        const hp = ctx.createBiquadFilter();
+        hp.type = 'highpass';
+        const baseHp = p.denoise <= 0 ? 20 : (45 + (p.denoise / 100) * 155);
+        const popHp = p.deplosive > 0 ? (60 + (p.deplosive / 100) * 90) : 20;
+        hp.frequency.value = Math.max(baseHp, popHp);
+        hp.Q.value = p.deplosive > 0 ? 1.1 : 0.7;
+
+        // 1b. De-Esser (6.5kHz Sibilance Cut) & Air Exciter (8.5kHz Sheen)
+        const deesserFilter = ctx.createBiquadFilter();
+        deesserFilter.type = 'peaking';
+        deesserFilter.frequency.value = 6500;
+        deesserFilter.Q.value = 3.2;
+        deesserFilter.gain.value = -(p.deesser / 100) * 11;
+
+        const exciterFilter = ctx.createBiquadFilter();
+        exciterFilter.type = 'highshelf';
+        exciterFilter.frequency.value = 8500;
+        exciterFilter.gain.value = (p.exciter / 100) * 7.5;
+
+        // 2. 5-Band EQ
+        const eq60 = ctx.createBiquadFilter();
+        eq60.type = 'lowshelf'; eq60.frequency.value = 60; eq60.gain.value = p.eq60;
+
+        const eq250 = ctx.createBiquadFilter();
+        eq250.type = 'peaking'; eq250.frequency.value = 250; eq250.Q.value = 1.1; eq250.gain.value = p.eq250;
+
+        const eq1000 = ctx.createBiquadFilter();
+        eq1000.type = 'peaking'; eq1000.frequency.value = 1000; eq1000.Q.value = 1.0; eq1000.gain.value = p.eq1000;
+
+        const eq4000 = ctx.createBiquadFilter();
+        eq4000.type = 'peaking'; eq4000.frequency.value = 4000; eq4000.Q.value = 1.1; eq4000.gain.value = p.eq4000;
+
+        const eq12000 = ctx.createBiquadFilter();
+        eq12000.type = 'highshelf'; eq12000.frequency.value = 12000; eq12000.gain.value = p.eq12000;
+
+        // 3. Voice character filter (telephone / vintage / dark)
+        const charFilter = ctx.createBiquadFilter();
+        if (p.voiceFilter === 'telephone') {
+          charFilter.type = 'bandpass'; charFilter.frequency.value = 1400; charFilter.Q.value = 1.6;
+        } else if (p.voiceFilter === 'vintage') {
+          charFilter.type = 'bandpass'; charFilter.frequency.value = 1100; charFilter.Q.value = 0.85;
+        } else if (p.voiceFilter === 'dark') {
+          charFilter.type = 'lowpass'; charFilter.frequency.value = 1350; charFilter.Q.value = 0.9;
+        } else if (p.voiceFilter === 'megaphone') {
+          charFilter.type = 'bandpass'; charFilter.frequency.value = 1750; charFilter.Q.value = 2.4;
+        } else {
+          charFilter.type = 'allpass'; charFilter.frequency.value = 1000;
+        }
+
+        // 4. Warmth + Distortion WaveShaper
+        const shaper = ctx.createWaveShaper();
+        const totalDrive = Math.min(100, p.distortion + p.warmth * 0.22);
+        shaper.curve = makeDistortionCurve(totalDrive);
+        shaper.oversample = '2x';
+
+        // 5. Zero-Stutter Robot Ring Modulator (always wired at 0 depth when off)
+        const ringGain = ctx.createGain();
+        ringGain.gain.value = p.robot > 0 ? (1 - (p.robot / 100) * 0.45) : 1;
+        const ringOsc = ctx.createOscillator();
+        ringOsc.type = 'sine';
+        ringOsc.frequency.value = 32 + (p.robot / 100) * 65;
+        const ringDepth = ctx.createGain();
+        ringDepth.gain.value = (p.robot / 100) * 0.85;
+        ringOsc.connect(ringDepth);
+        ringDepth.connect(ringGain.gain);
+        ringOsc.start();
+
+        // 6. Dynamics Compressor (transparent when 0)
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = p.compressor <= 0 ? 0 : (-6 - (p.compressor / 100) * 28);
+        comp.knee.value = 18;
+        comp.ratio.value = p.compressor <= 0 ? 1 : (1 + (p.compressor / 100) * 7);
+        comp.attack.value = 0.008;
+        comp.release.value = 0.2;
+
+        // 7. Gain-Compensated Dry / Reverb / Delay Mix Bus (prevents clipping & echo buildup)
+        const revAmt = (p.reverb / 100) * 0.65;
+        const delAmt = (p.delay / 100) * 0.55;
+        const choAmt = (p.chorus / 100) * 0.45;
+        const dryGain = ctx.createGain();
+        dryGain.gain.value = 1 / (1 + (revAmt + delAmt + choAmt) * 0.45);
+
+        const reverbNode = ctx.createConvolver();
+        reverbNode.buffer = irBuf || createImpulseResponse(ctx, 2.2, 2.5);
+        const reverbWet = ctx.createGain();
+        reverbWet.gain.value = revAmt;
+
+        const delayNode = ctx.createDelay(1.5);
+        delayNode.delayTime.value = p.delayTime;
+        const delayFb = ctx.createGain();
+        delayFb.gain.value = p.delay <= 0 ? 0 : Math.min(0.65, (p.delay / 100) * 0.6);
+        const delayWet = ctx.createGain();
+        delayWet.gain.value = delAmt;
+
+        // Chorus modulated delay path
+        const chorusDelay = ctx.createDelay(0.1);
+        chorusDelay.delayTime.value = 0.022;
+        const chorusLfo = ctx.createOscillator();
+        chorusLfo.type = 'sine';
+        chorusLfo.frequency.value = 1.6;
+        const chorusLfoGain = ctx.createGain();
+        chorusLfoGain.gain.value = 0.006;
+        chorusLfo.connect(chorusLfoGain);
+        chorusLfoGain.connect(chorusDelay.delayTime);
+        chorusLfo.start();
+        const chorusWet = ctx.createGain();
+        chorusWet.gain.value = choAmt;
+
+        const panNode = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+        if (panNode) panNode.pan.value = p.pan || 0;
+
+        const masterGain = ctx.createGain();
+        masterGain.gain.value = p.volume;
+
+        // Stereo Widener (Haas micro-delay stereo spread)
+        const wideDelay = ctx.createDelay(0.05);
+        wideDelay.delayTime.value = 0.011;
+        const wideWet = ctx.createGain();
+        wideWet.gain.value = (p.stereoWidth / 100) * 0.36;
+
+        // Output Device Calibration EQ (Headphones / Speakers / Mobile)
+        const outProfileFilter = ctx.createBiquadFilter();
+        if (ioConfig.outputProfile === 'headphones') {
+          outProfileFilter.type = 'highshelf'; outProfileFilter.frequency.value = 5000; outProfileFilter.gain.value = 2.0;
+        } else if (ioConfig.outputProfile === 'speakers') {
+          outProfileFilter.type = 'highpass'; outProfileFilter.frequency.value = 55; outProfileFilter.Q.value = 0.7;
+        } else if (ioConfig.outputProfile === 'mobile') {
+          outProfileFilter.type = 'peaking'; outProfileFilter.frequency.value = 2200; outProfileFilter.Q.value = 0.9; outProfileFilter.gain.value = 3.5;
+        } else {
+          outProfileFilter.type = 'allpass';
+        }
+
+        // Brickwall Safety Limiter: guarantees zero digital clipping/distortion
+        const limiter = ctx.createDynamicsCompressor();
+        limiter.threshold.value = -1.5;
+        limiter.knee.value = 6;
+        limiter.ratio.value = 20;
+        limiter.attack.value = 0.002;
+        limiter.release.value = 0.08;
+
+        // Connect Serial Chain
+        sourceNode.connect(hp);
+        hp.connect(deesserFilter);
+        deesserFilter.connect(exciterFilter);
+        exciterFilter.connect(eq60);
+        eq60.connect(eq250);
+        eq250.connect(eq1000);
+        eq1000.connect(eq4000);
+        eq4000.connect(eq12000);
+        eq12000.connect(charFilter);
+        charFilter.connect(shaper);
+        shaper.connect(ringGain);
+        ringGain.connect(comp);
+
+        // Dry path
+        comp.connect(dryGain);
+        dryGain.connect(masterGain);
+
+        // Reverb path
+        comp.connect(reverbNode);
+        reverbNode.connect(reverbWet);
+        reverbWet.connect(masterGain);
+
+        // Delay path
+        comp.connect(delayNode);
+        delayNode.connect(delayFb);
+        delayFb.connect(delayNode);
+        delayNode.connect(delayWet);
+        delayWet.connect(masterGain);
+
+        // Chorus path
+        comp.connect(chorusDelay);
+        chorusDelay.connect(chorusWet);
+        chorusWet.connect(masterGain);
+
+        // Stereo Widener path
+        comp.connect(wideDelay);
+        wideDelay.connect(wideWet);
+        wideWet.connect(masterGain);
+
+        if (panNode) {
+          masterGain.connect(panNode);
+          panNode.connect(outProfileFilter);
+        } else {
+          masterGain.connect(outProfileFilter);
+        }
+        outProfileFilter.connect(limiter);
+        limiter.connect(destinationNode);
+
+        return {
+          hp, deesserFilter, exciterFilter, eq60, eq250, eq1000, eq4000, eq12000, charFilter, shaper,
+          ringGain, ringOsc, ringDepth, comp, dryGain, reverbWet, delayNode, delayFb, delayWet,
+          chorusWet, chorusLfo, wideWet, outProfileFilter, panNode, masterGain, limiter
+        };
+      }
+
+      function updateLiveDSPParams() {
+        if (!liveNodes || !isPlaying || isBypassed) return;
+        const now = audioCtx.currentTime;
+        if (liveNodes.hp) {
+          const baseHp = params.denoise <= 0 ? 20 : (45 + (params.denoise / 100) * 155);
+          const popHp = params.deplosive > 0 ? (60 + (params.deplosive / 100) * 90) : 20;
+          liveNodes.hp.frequency.setTargetAtTime(Math.max(baseHp, popHp), now, 0.03);
+        }
+        if (liveNodes.deesserFilter) liveNodes.deesserFilter.gain.setTargetAtTime(-(params.deesser / 100) * 11, now, 0.03);
+        if (liveNodes.exciterFilter) liveNodes.exciterFilter.gain.setTargetAtTime((params.exciter / 100) * 7.5, now, 0.03);
+        if (liveNodes.wideWet) liveNodes.wideWet.gain.setTargetAtTime((params.stereoWidth / 100) * 0.36, now, 0.03);
+        if (liveNodes.eq60) liveNodes.eq60.gain.setTargetAtTime(params.eq60, now, 0.03);
+        if (liveNodes.eq250) liveNodes.eq250.gain.setTargetAtTime(params.eq250, now, 0.03);
+        if (liveNodes.eq1000) liveNodes.eq1000.gain.setTargetAtTime(params.eq1000, now, 0.03);
+        if (liveNodes.eq4000) liveNodes.eq4000.gain.setTargetAtTime(params.eq4000, now, 0.03);
+        if (liveNodes.eq12000) liveNodes.eq12000.gain.setTargetAtTime(params.eq12000, now, 0.03);
+        if (liveNodes.comp) {
+          liveNodes.comp.threshold.setTargetAtTime(params.compressor <= 0 ? 0 : (-6 - (params.compressor / 100) * 28), now, 0.03);
+          liveNodes.comp.ratio.setTargetAtTime(params.compressor <= 0 ? 1 : (1 + (params.compressor / 100) * 7), now, 0.03);
+        }
+        if (liveNodes.shaper) {
+          liveNodes.shaper.curve = makeDistortionCurve(Math.min(100, params.distortion + params.warmth * 0.25));
+        }
+        const revAmt = (params.reverb / 100) * 0.65;
+        const delAmt = (params.delay / 100) * 0.55;
+        const choAmt = (params.chorus / 100) * 0.45;
+        if (liveNodes.dryGain) liveNodes.dryGain.gain.setTargetAtTime(1 / (1 + (revAmt + delAmt + choAmt) * 0.45), now, 0.03);
+        if (liveNodes.reverbWet) liveNodes.reverbWet.gain.setTargetAtTime(revAmt, now, 0.03);
+        if (liveNodes.delayNode) liveNodes.delayNode.delayTime.setTargetAtTime(params.delayTime, now, 0.03);
+        if (liveNodes.delayFb) liveNodes.delayFb.gain.setTargetAtTime(params.delay <= 0 ? 0 : Math.min(0.65, (params.delay / 100) * 0.6), now, 0.03);
+        if (liveNodes.delayWet) liveNodes.delayWet.gain.setTargetAtTime(delAmt, now, 0.03);
+        if (liveNodes.ringOsc && liveNodes.ringDepth && liveNodes.ringGain) {
+          liveNodes.ringOsc.frequency.setTargetAtTime(32 + (params.robot / 100) * 65, now, 0.03);
+          liveNodes.ringDepth.gain.setTargetAtTime((params.robot / 100) * 0.85, now, 0.03);
+          liveNodes.ringGain.gain.setTargetAtTime(params.robot > 0 ? (1 - (params.robot / 100) * 0.45) : 1, now, 0.03);
+        }
+        if (liveNodes.chorusWet) liveNodes.chorusWet.gain.setTargetAtTime(choAmt, now, 0.03);
+        if (liveNodes.panNode) liveNodes.panNode.pan.setTargetAtTime(params.pan || 0, now, 0.03);
+        if (liveNodes.charFilter) {
+          if (params.voiceFilter === 'telephone') {
+            liveNodes.charFilter.type = 'bandpass'; liveNodes.charFilter.frequency.setTargetAtTime(1400, now, 0.03); liveNodes.charFilter.Q.setTargetAtTime(1.6, now, 0.03);
+          } else if (params.voiceFilter === 'vintage') {
+            liveNodes.charFilter.type = 'bandpass'; liveNodes.charFilter.frequency.setTargetAtTime(1100, now, 0.03); liveNodes.charFilter.Q.setTargetAtTime(0.85, now, 0.03);
+          } else if (params.voiceFilter === 'dark') {
+            liveNodes.charFilter.type = 'lowpass'; liveNodes.charFilter.frequency.setTargetAtTime(1350, now, 0.03); liveNodes.charFilter.Q.setTargetAtTime(0.9, now, 0.03);
+          } else if (params.voiceFilter === 'megaphone') {
+            liveNodes.charFilter.type = 'bandpass'; liveNodes.charFilter.frequency.setTargetAtTime(1750, now, 0.03); liveNodes.charFilter.Q.setTargetAtTime(2.4, now, 0.03);
+          } else {
+            liveNodes.charFilter.type = 'allpass';
+          }
+        }
+        if (liveNodes.masterGain) liveNodes.masterGain.gain.setTargetAtTime(params.volume, now, 0.03);
+        if (activeSource) {
+          const rate = params.speed * Math.pow(2, params.pitch / 12);
+          activeSource.playbackRate.setTargetAtTime(Math.max(0.25, Math.min(3.0, rate)), now, 0.03);
+        }
+      }
+
+      // =========================================================================
+      // PLAYBACK ENGINE
+      // =========================================================================
+      function stopPlayback(resetOffset = false) {
+        if (activeSource) {
+          try { activeSource.onended = null; activeSource.stop(); } catch (e) {}
+          activeSource = null;
+        }
+        if (liveNodes) {
+          if (liveNodes.ringOsc) { try { liveNodes.ringOsc.stop(); } catch (e) {} }
+          if (liveNodes.chorusLfo) { try { liveNodes.chorusLfo.stop(); } catch (e) {} }
+          if (liveNodes.limiter) { try { liveNodes.limiter.disconnect(); } catch (e) {} }
+          if (liveNodes.masterGain) { try { liveNodes.masterGain.disconnect(); } catch (e) {} }
+        }
+        liveNodes = null;
+        isPlaying = false;
+        if (resetOffset) playOffset = currentBuffer ? selStart * currentBuffer.duration : 0;
+        document.getElementById('playLabel').textContent = 'تشغيل';
+        setStatus('جاهز');
+      }
+
+      function startPlayback() {
+        if (!currentBuffer) {
+          loadDemoAudio();
+        }
+        const ctx = ensureAudioCtx();
+        stopPlayback(false);
+
+        const startSec = Math.max(0, Math.min(currentBuffer.duration - 0.02, playOffset));
+        const endSec = selEnd > selStart + 0.01 ? selEnd * currentBuffer.duration : currentBuffer.duration;
+        const durSec = Math.max(0.05, endSec - startSec);
+
+        const source = ctx.createBufferSource();
+        source.buffer = currentBuffer;
+        const rate = params.speed * Math.pow(2, params.pitch / 12);
+        source.playbackRate.value = Math.max(0.25, Math.min(3.0, rate));
+        source.loop = isLooping;
+        if (isLooping) {
+          source.loopStart = selStart * currentBuffer.duration;
+          source.loopEnd = endSec;
+        }
+
+        // Metering & Analyser
+        masterAnalyserMain = ctx.createAnalyser();
+        masterAnalyserMain.fftSize = 1024;
+        const splitter = ctx.createChannelSplitter(2);
+        masterAnalyserL = ctx.createAnalyser();
+        masterAnalyserR = ctx.createAnalyser();
+        masterAnalyserL.fftSize = 256;
+        masterAnalyserR.fftSize = 256;
+
+        liveNodes = buildDSPChain(ctx, source, masterAnalyserMain, params, isBypassed, reverbIRBuffer);
+        masterAnalyserMain.connect(splitter);
+        splitter.connect(masterAnalyserL, 0);
+        splitter.connect(masterAnalyserR, currentBuffer.numberOfChannels > 1 ? 1 : 0);
+        masterAnalyserMain.connect(ctx.destination);
+
+        activeSource = source;
+        isPlaying = true;
+        playStartTime = ctx.currentTime;
+        document.getElementById('playLabel').textContent = 'إيقاف مؤقت';
+        setStatus('قيد التشغيل');
+
+        source.onended = () => {
+          if (activeSource === source && !isLooping) {
+            isPlaying = false;
+            activeSource = null;
+            playOffset = selStart * currentBuffer.duration;
+            document.getElementById('playLabel').textContent = 'تشغيل';
+            setStatus('جاهز');
+          }
+        };
+
+        if (isLooping) {
+          source.start(0, startSec);
+        } else {
+          source.start(0, startSec, durSec);
+        }
+      }
+
+      // =========================================================================
+      // MICROPHONE RECORDING
+      // =========================================================================
+      async function toggleRecording() {
+        const btn = document.getElementById('btnRecord');
+        const label = document.getElementById('recLabel');
+
+        if (isRecording) {
+          isRecording = false;
+          btn.classList.remove('recording-pulse');
+          label.textContent = 'تسجيل';
+          clearInterval(recTimerInterval);
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+          if (mediaStream) {
+            mediaStream.getTracks().forEach(t => t.stop());
+            mediaStream = null;
+          }
+          liveMicAnalyser = null;
+          setStatus('جاري المعالجة...');
+          return;
+        }
+
+        try {
+          stopPlayback(true);
+          if (ambientState.active) stopAmbient();
+          const ctx = ensureAudioCtx();
+          // High-fidelity mic capture using user's selected Audio I/O receiver & preamp gain
+          const audioConstraints = {
+            echoCancellation: ioConfig.echoCancellation,
+            noiseSuppression: ioConfig.noiseSuppression,
+            autoGainControl: ioConfig.autoGainControl,
+            channelCount: 1
+          };
+          if (ioConfig.inputDeviceId && ioConfig.inputDeviceId !== 'default') {
+            audioConstraints.deviceId = { exact: ioConfig.inputDeviceId };
+          }
+          mediaStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints });
+          refreshAudioDevices();
+
+          const micSource = ctx.createMediaStreamSource(mediaStream);
+          const micPreamp = ctx.createGain();
+          micPreamp.gain.value = ioConfig.micGain || 1.0;
+          const micLimiter = ctx.createDynamicsCompressor();
+          micLimiter.threshold.value = -1.5; micLimiter.ratio.value = 20; micLimiter.attack.value = 0.002;
+          liveMicAnalyser = ctx.createAnalyser();
+          liveMicAnalyser.fftSize = 1024;
+
+          const recDest = ctx.createMediaStreamDestination();
+          micSource.connect(micPreamp);
+          micPreamp.connect(micLimiter);
+          micLimiter.connect(liveMicAnalyser);
+          micLimiter.connect(recDest);
+
+          recordedChunks = [];
+          const recOpts = {};
+          if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) {
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+              recOpts.mimeType = 'audio/webm;codecs=opus';
+            } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+              recOpts.mimeType = 'audio/mp4';
+            }
+          }
+          recOpts.audioBitsPerSecond = 256000;
+          try {
+            mediaRecorder = new MediaRecorder(recDest.stream, recOpts);
+          } catch (e) {
+            mediaRecorder = new MediaRecorder(mediaStream);
+          }
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+          };
+          mediaRecorder.onstop = async () => {
+            try {
+              const blob = new Blob(recordedChunks, { type: recordedChunks[0]?.type || 'audio/webm' });
+              const arrBuf = await blob.arrayBuffer();
+              const decoded = await ctx.decodeAudioData(arrBuf);
+              pushUndo();
+              // Reset lingering echo/distortion/voice-changer FX so user hears their pure clean recording first
+              const hadHeavyFx = params.reverb > 0 || params.delay > 0 || params.distortion > 0 || params.robot > 0 || params.chorus > 0 || params.pitch !== 0 || params.voiceFilter !== 'none';
+              if (hadHeavyFx) {
+                params = defaultParams();
+                syncSlidersFromParams();
+                document.querySelectorAll('#voicePresetGrid .preset-card').forEach(c => c.classList.toggle('selected', c.dataset.voicePreset === 'normal'));
+                document.querySelectorAll('#enhancePresetGrid .preset-card').forEach(c => c.classList.toggle('selected', c.dataset.enhancePreset === 'clean'));
+              }
+              setNewBuffer(decoded, `تسجيل صوتي ${takesLibrary.length + 1}`);
+              saveCurrentToTakes(`تسجيل ${new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`);
+              showToast(hadHeavyFx ? 'تم حفظ التسجيل بوضع نقي صافي بدون صدى أو تشويه!' : 'تم حفظ التسجيل الصوتي بنقاء تام!', 'purple');
+            } catch (err) {
+              showToast('تعذر فك ترميز التسجيل. جرب مرة أخرى.', 'red');
+            }
+            setStatus('جاهز');
+          };
+
+          mediaRecorder.start(100);
+          isRecording = true;
+          recStartTime = Date.now();
+          btn.classList.add('recording-pulse');
+          label.textContent = 'إيقاف التسجيل';
+          setStatus('جاري التسجيل ●');
+          showToast('بدأ التسجيل الصوتي الآن...', 'red');
+
+          recTimerInterval = setInterval(() => {
+            const elapsed = (Date.now() - recStartTime) / 1000;
+            document.getElementById('timeCurrent').textContent = formatTime(elapsed);
+          }, 100);
+        } catch (err) {
+          showToast('لم يتم منح صلاحية الميكروفون — يمكنك رفع ملف أو استخدام العينة التجريبية.', 'red');
+          setStatus('جاهز');
+        }
+      }
+
+      // =========================================================================
+      // WAVEFORM DESTRUCTIVE EDITING (Trim, Cut, Fade, Normalize, Reverse, Silence)
+      // =========================================================================
+      function pushUndo() {
+        if (!currentBuffer) return;
+        const copy = cloneAudioBuffer(currentBuffer);
+        undoStack.push(copy);
+        if (undoStack.length > 10) undoStack.shift();
+      }
+
+      function cloneAudioBuffer(buf) {
+        const ctx = ensureAudioCtx();
+        const copy = ctx.createBuffer(buf.numberOfChannels, buf.length, buf.sampleRate);
+        for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+          copy.getChannelData(ch).set(buf.getChannelData(ch));
+        }
+        return copy;
+      }
+
+      function setNewBuffer(buf, name) {
+        stopPlayback(true);
+        currentBuffer = buf;
+        selStart = 0;
+        selEnd = 1;
+        playOffset = 0;
+        if (name) document.getElementById('currentClipName').textContent = name;
+        document.getElementById('timeTotal').textContent = formatTime(buf.duration);
+        document.getElementById('timeCurrent').textContent = formatTime(0);
+        waveCacheDirty = true;
+        needsRedraw = true;
+        updateSelectionBadge();
+      }
+
+      function applyTrimKeep() {
+        if (!currentBuffer) return;
+        if (selEnd - selStart < 0.02 || (selStart === 0 && selEnd === 1)) {
+          showToast('حدد جزءاً على الموجة الصوتية بالسحب أولاً', 'red');
+          return;
+        }
+        pushUndo();
+        const ctx = ensureAudioCtx();
+        const sIdx = Math.floor(selStart * currentBuffer.length);
+        const eIdx = Math.floor(selEnd * currentBuffer.length);
+        const newLen = Math.max(1, eIdx - sIdx);
+        const out = ctx.createBuffer(currentBuffer.numberOfChannels, newLen, currentBuffer.sampleRate);
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          out.getChannelData(ch).set(currentBuffer.getChannelData(ch).subarray(sIdx, eIdx));
+        }
+        setNewBuffer(out);
+        showToast('تم قص الصوت للجزء المحدد بنجاح', 'purple');
+      }
+
+      function applyCutSelection() {
+        if (!currentBuffer) return;
+        if (selEnd - selStart < 0.02 || (selStart === 0 && selEnd === 1)) {
+          showToast('حدد جزءاً صغيراً على الموجة لحذفه أولاً', 'red');
+          return;
+        }
+        pushUndo();
+        const ctx = ensureAudioCtx();
+        const sIdx = Math.floor(selStart * currentBuffer.length);
+        const eIdx = Math.floor(selEnd * currentBuffer.length);
+        const newLen = Math.max(1, currentBuffer.length - (eIdx - sIdx));
+        const out = ctx.createBuffer(currentBuffer.numberOfChannels, newLen, currentBuffer.sampleRate);
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const src = currentBuffer.getChannelData(ch);
+          const dst = out.getChannelData(ch);
+          dst.set(src.subarray(0, sIdx), 0);
+          dst.set(src.subarray(eIdx), sIdx);
+        }
+        setNewBuffer(out);
+        showToast('تم حذف الجزء المحدد من الصوت', 'purple');
+      }
+
+      function applyFade(direction) {
+        if (!currentBuffer) return;
+        pushUndo();
+        const fadeLen = Math.min(Math.floor(currentBuffer.sampleRate * 1.2), Math.floor(currentBuffer.length * 0.35));
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const d = currentBuffer.getChannelData(ch);
+          for (let i = 0; i < fadeLen; i++) {
+            const gain = i / fadeLen;
+            if (direction === 'in') {
+              d[i] *= gain;
+            } else {
+              d[d.length - 1 - i] *= gain;
+            }
+          }
+        }
+        waveCacheDirty = true; needsRedraw = true;
+        showToast(direction === 'in' ? 'تم تطبيق تلاشي الدخول بنجاح' : 'تم تطبيق تلاشي الخروج بنجاح', 'purple');
+      }
+
+      function applyNormalize() {
+        if (!currentBuffer) return;
+        pushUndo();
+        let peak = 0;
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const d = currentBuffer.getChannelData(ch);
+          for (let i = 0; i < d.length; i++) {
+            const abs = Math.abs(d[i]);
+            if (abs > peak) peak = abs;
+          }
+        }
+        if (peak < 0.0001) return;
+        const scale = 0.94 / peak;
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const d = currentBuffer.getChannelData(ch);
+          for (let i = 0; i < d.length; i++) d[i] *= scale;
+        }
+        waveCacheDirty = true; needsRedraw = true;
+        showToast('تم توحيد مستوى الصوت لأفضل نقاء (Normalize)', 'purple');
+      }
+
+      function applyReverse() {
+        if (!currentBuffer) return;
+        pushUndo();
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          currentBuffer.getChannelData(ch).reverse();
+        }
+        waveCacheDirty = true;
+        needsRedraw = true;
+        showToast('تم عكس الصوت بالكامل!', 'red');
+      }
+
+      function applyDuplicate() {
+        if (!currentBuffer) return;
+        if (currentBuffer.duration > 60) {
+          showToast('المقطع طويل بالفعل لتكراره', 'red');
+          return;
+        }
+        pushUndo();
+        const ctx = ensureAudioCtx();
+        const out = ctx.createBuffer(currentBuffer.numberOfChannels, currentBuffer.length * 2, currentBuffer.sampleRate);
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const src = currentBuffer.getChannelData(ch);
+          const dst = out.getChannelData(ch);
+          dst.set(src, 0);
+          dst.set(src, src.length);
+        }
+        setNewBuffer(out);
+        showToast('تم تكرار المقطع مرتين بنجاح (×2)!', 'purple');
+      }
+
+      function applyTrimSilence() {
+        if (!currentBuffer) return;
+        const d = currentBuffer.getChannelData(0);
+        const threshold = 0.015;
+        let first = 0;
+        let last = d.length - 1;
+        while (first < d.length && Math.abs(d[first]) < threshold) first++;
+        while (last > first && Math.abs(d[last]) < threshold) last--;
+        const pad = Math.floor(currentBuffer.sampleRate * 0.05);
+        first = Math.max(0, first - pad);
+        last = Math.min(d.length - 1, last + pad);
+        if (last - first < currentBuffer.sampleRate * 0.1) {
+          showToast('الصوت لا يحتوي على صمت زائد لإزالته', 'purple');
+          return;
+        }
+        pushUndo();
+        const ctx = ensureAudioCtx();
+        const out = ctx.createBuffer(currentBuffer.numberOfChannels, last - first, currentBuffer.sampleRate);
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          out.getChannelData(ch).set(currentBuffer.getChannelData(ch).subarray(first, last));
+        }
+        setNewBuffer(out);
+        showToast('تمت إزالة الصمت من بداية ونهاية المقطع', 'purple');
+      }
+
+      function applyUndo() {
+        if (undoStack.length === 0) {
+          showToast('لا توجد تعديلات سابقة للتراجع عنها', 'red');
+          return;
+        }
+        const prev = undoStack.pop();
+        setNewBuffer(prev);
+        showToast('تم التراجع عن آخر تعديل على الموجة', 'purple');
+      }
+
+      // =========================================================================
+      // WAV ENCODING & OFFLINE RENDER EXPORT
+      // =========================================================================
+      // Enumerate real microphone inputs & speaker outputs
+      async function refreshAudioDevices() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const inSel = document.getElementById('inputDeviceSelect');
+          const outSel = document.getElementById('outputDeviceSelect');
+          const prevIn = inSel.value;
+          const prevOut = outSel.value;
+          inSel.innerHTML = '<option value="default">الميكروفون الافتراضي للنظام</option>';
+          outSel.innerHTML = '<option value="default">مخرج الصوت الافتراضي</option>';
+          let inCount = 1, outCount = 1;
+          devices.forEach(d => {
+            if (d.kind === 'audioinput' && d.deviceId && d.deviceId !== 'default') {
+              const opt = document.createElement('option');
+              opt.value = d.deviceId;
+              opt.textContent = d.label || `ميكروفون ${inCount++}`;
+              inSel.appendChild(opt);
+            } else if (d.kind === 'audiooutput' && d.deviceId && d.deviceId !== 'default') {
+              const opt = document.createElement('option');
+              opt.value = d.deviceId;
+              opt.textContent = d.label || `مخرج صوت ${outCount++}`;
+              outSel.appendChild(opt);
+            }
+          });
+          if ([...inSel.options].some(o => o.value === prevIn)) inSel.value = prevIn;
+          if ([...outSel.options].some(o => o.value === prevOut)) outSel.value = prevOut;
+        } catch (e) {}
+      }
+
+      async function applyOutputSink(deviceId) {
+        ioConfig.outputDeviceId = deviceId;
+        const ctx = ensureAudioCtx();
+        if (typeof ctx.setSinkId === 'function') {
+          try {
+            await ctx.setSinkId(deviceId === 'default' ? '' : deviceId);
+            showToast('تم تحويل مخرج الصوت بنجاح!', 'purple');
+          } catch (e) {
+            showToast('تم حفظ مخرج الصوت (التبديل المباشر يعتمد على صلاحية المتصفح)', 'purple');
+          }
+        } else {
+          showToast('تم ضبط تفضيل مخرج الصوت', 'purple');
+        }
+      }
+
+      // Smart Auto-Leveler (windowed RMS volume leveling for balanced podcasts/vocals)
+      function applyAutoLeveler() {
+        if (!currentBuffer) return;
+        pushUndo();
+        const sr = currentBuffer.sampleRate;
+        const win = Math.floor(sr * 0.15);
+        const targetRms = 0.18;
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const d = currentBuffer.getChannelData(ch);
+          let smoothGain = 1.0;
+          for (let i = 0; i < d.length; i += win) {
+            const end = Math.min(d.length, i + win);
+            let sum = 0;
+            for (let j = i; j < end; j++) sum += d[j] * d[j];
+            const rms = Math.sqrt(sum / Math.max(1, end - i));
+            const desired = rms > 0.015 ? Math.min(2.6, Math.max(0.45, targetRms / rms)) : 1.0;
+            for (let j = i; j < end; j++) {
+              smoothGain += (desired - smoothGain) * 0.002;
+              d[j] = Math.max(-0.96, Math.min(0.96, d[j] * smoothGain));
+            }
+          }
+        }
+        waveCacheDirty = true; needsRedraw = true;
+        showToast('تمت موازنة الأجزاء الهادئة والمرتفعة بذكاء!', 'purple');
+      }
+
+      // Smart Noise Gate (silences background hiss between spoken phrases)
+      function applyNoiseGate() {
+        if (!currentBuffer) return;
+        pushUndo();
+        const sr = currentBuffer.sampleRate;
+        const win = Math.floor(sr * 0.03);
+        const threshold = 0.018;
+        for (let ch = 0; ch < currentBuffer.numberOfChannels; ch++) {
+          const d = currentBuffer.getChannelData(ch);
+          let env = 1.0;
+          for (let i = 0; i < d.length; i += win) {
+            const end = Math.min(d.length, i + win);
+            let sum = 0;
+            for (let j = i; j < end; j++) sum += d[j] * d[j];
+            const rms = Math.sqrt(sum / Math.max(1, end - i));
+            const target = rms < threshold ? 0.05 : 1.0;
+            for (let j = i; j < end; j++) {
+              env += (target - env) * 0.01;
+              d[j] *= env;
+            }
+          }
+        }
+        waveCacheDirty = true; needsRedraw = true;
+        showToast('تم تطبيق بوابة الضوضاء لعزل الهمهمة بين الكلمات!', 'purple');
+      }
+
+      // Vocal Center Isolator / Focus
+      function applyVocalIsolator() {
+        if (!currentBuffer) return;
+        pushUndo();
+        if (currentBuffer.numberOfChannels >= 2) {
+          const L = currentBuffer.getChannelData(0);
+          const R = currentBuffer.getChannelData(1);
+          for (let i = 0; i < L.length; i++) {
+            const center = (L[i] + R[i]) * 0.5;
+            const side = (L[i] - R[i]) * 0.12;
+            L[i] = Math.max(-0.96, Math.min(0.96, center + side));
+            R[i] = Math.max(-0.96, Math.min(0.96, center - side));
+          }
+        }
+        params.denoise = Math.max(params.denoise, 50);
+        params.eq1000 = Math.max(params.eq1000, 3);
+        params.eq4000 = Math.max(params.eq4000, 3.5);
+        syncSlidersFromParams();
+        waveCacheDirty = true; needsRedraw = true;
+        showToast('تم تركيز وعزل الصوت البشري في المنتصف!', 'purple');
+      }
+
+      // 1-Click AI Auto-Master (analyzes buffer loudness & spectral energy)
+      function runAiAutoMaster() {
+        if (!currentBuffer) return;
+        prevParamsSnapshot = { ...params };
+        const d = currentBuffer.getChannelData(0);
+        let sumSq = 0, peak = 0, diffSum = 0;
+        const step = Math.max(1, Math.floor(d.length / 40000));
+        for (let i = step; i < d.length; i += step) {
+          const v = d[i];
+          sumSq += v * v;
+          if (Math.abs(v) > peak) peak = Math.abs(v);
+          diffSum += Math.abs(v - d[i - step]);
+        }
+        const n = Math.max(1, Math.floor(d.length / step));
+        const rms = Math.sqrt(sumSq / n);
+        const brightness = diffSum / (n * Math.max(0.01, rms));
+
+        params.denoise = 38;
+        params.deplosive = 35;
+        params.deesser = brightness > 0.7 ? 52 : 25;
+        params.exciter = brightness < 0.45 ? 45 : 20;
+        params.compressor = rms < 0.12 ? 62 : 42;
+        params.warmth = 18;
+        params.stereoWidth = 22;
+        params.eq60 = 2;
+        params.eq250 = 1;
+        params.eq1000 = 1.5;
+        params.eq4000 = 3.5;
+        params.eq12000 = 2.5;
+        syncSlidersFromParams();
+        showToast('تم التحليل وتطبيق الماسترنج الذكي تلقائياً!', 'purple');
+      }
+
+      // Waveform Markers
+      function addWaveformMarker() {
+        if (!currentBuffer) return;
+        let pos = playOffset;
+        if (isPlaying && audioCtx) {
+          const rate = Math.max(0.25, Math.min(3.0, params.speed * Math.pow(2, params.pitch / 12)));
+          pos = Math.min(currentBuffer.duration, playOffset + (audioCtx.currentTime - playStartTime) * rate);
+        }
+        const frac = Math.max(0, Math.min(1, pos / Math.max(0.01, currentBuffer.duration)));
+        waveMarkers.push({ id: Date.now(), frac, time: pos, label: `علامة ${waveMarkers.length + 1}` });
+        renderMarkersBar();
+        needsRedraw = true;
+        showToast(`تمت إضافة علامة عند ${formatTime(pos)}`, 'purple');
+      }
+
+      function renderMarkersBar() {
+        const bar = document.getElementById('markersBar');
+        if (!waveMarkers.length) { bar.classList.add('hidden'); bar.innerHTML = ''; return; }
+        bar.classList.remove('hidden');
+        bar.innerHTML = '<span class="text-zinc-400 font-bold ml-1">العلامات:</span>';
+        waveMarkers.forEach(m => {
+          const btn = document.createElement('button');
+          btn.className = 'px-2 py-0.5 rounded-full bg-purple-500/20 hover:bg-red-500/30 border border-purple-500/40 text-purple-100 font-mono transition';
+          btn.textContent = `${m.label} (${formatTime(m.time)})`;
+          btn.addEventListener('click', () => {
+            playOffset = m.time;
+            needsRedraw = true;
+            if (isPlaying) startPlayback();
+          });
+          bar.appendChild(btn);
+        });
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'px-2 py-0.5 rounded-full bg-white/5 hover:bg-red-500/20 text-zinc-400 hover:text-red-300 transition';
+        clearBtn.textContent = 'مسح';
+        clearBtn.addEventListener('click', () => { waveMarkers = []; renderMarkersBar(); needsRedraw = true; });
+        bar.appendChild(clearBtn);
+      }
+
+      function audioBufferToWav(buffer, bitDepth = 16) {
+        const numCh = buffer.numberOfChannels;
+        const sr = buffer.sampleRate;
+        const len = buffer.length;
+        const is24 = bitDepth === 24;
+        const bytesPerSample = is24 ? 3 : 2;
+        const blockAlign = numCh * bytesPerSample;
+        const dataSize = len * blockAlign;
+        const arrayBuf = new ArrayBuffer(44 + dataSize);
+        const view = new DataView(arrayBuf);
+
+        function writeStr(offset, str) {
+          for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+        }
+
+        writeStr(0, 'RIFF');
+        view.setUint32(4, 36 + dataSize, true);
+        writeStr(8, 'WAVE');
+        writeStr(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, numCh, true);
+        view.setUint32(24, sr, true);
+        view.setUint32(28, sr * blockAlign, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, is24 ? 24 : 16, true);
+        writeStr(36, 'data');
+        view.setUint32(40, dataSize, true);
+
+        const channels = [];
+        for (let ch = 0; ch < numCh; ch++) channels.push(buffer.getChannelData(ch));
+        let offset = 44;
+        for (let i = 0; i < len; i++) {
+          for (let ch = 0; ch < numCh; ch++) {
+            const sample = Math.max(-1, Math.min(1, channels[ch][i]));
+            if (is24) {
+              const v = Math.round(sample < 0 ? sample * 0x800000 : sample * 0x7fffff);
+              view.setUint8(offset, v & 0xff);
+              view.setUint8(offset + 1, (v >> 8) & 0xff);
+              view.setUint8(offset + 2, (v >> 16) & 0xff);
+              offset += 3;
+            } else {
+              view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+              offset += 2;
+            }
+          }
+        }
+        return new Blob([arrayBuf], { type: 'audio/wav' });
+      }
+
+      async function exportProcessedWav() {
+        if (!currentBuffer) {
+          showToast('لا يوجد مقطع صوتي للتصدير', 'red');
+          return;
+        }
+        setStatus('جاري التصدير...');
+        try {
+          const rate = Math.max(0.25, Math.min(3.0, params.speed * Math.pow(2, params.pitch / 12)));
+          const extraTail = (params.reverb > 0 || params.delay > 0) ? 1.5 : 0.1;
+          const outDur = currentBuffer.duration / rate + extraTail;
+          const bitDepth = parseInt(document.getElementById('exportBitDepth')?.value || '24', 10);
+          const outCh = parseInt(document.getElementById('exportChannels')?.value || '2', 10);
+          const loudnessMode = document.getElementById('exportLoudness')?.value || 'raw';
+          const offline = new OfflineAudioContext(outCh, Math.ceil(outDur * currentBuffer.sampleRate), currentBuffer.sampleRate);
+          const src = offline.createBufferSource();
+          src.buffer = currentBuffer;
+          src.playbackRate.value = rate;
+          const ir = createImpulseResponse(offline, 2.2, 2.5);
+          buildDSPChain(offline, src, offline.destination, params, isBypassed, ir);
+          src.start(0);
+          const rendered = await offline.startRendering();
+          if (loudnessMode !== 'raw') {
+            const targetRms = loudnessMode === 'youtube' ? 0.22 : 0.18;
+            let sumSq = 0, peak = 0;
+            const d0 = rendered.getChannelData(0);
+            for (let i = 0; i < d0.length; i++) {
+              sumSq += d0[i] * d0[i];
+              if (Math.abs(d0[i]) > peak) peak = Math.abs(d0[i]);
+            }
+            const curRms = Math.sqrt(sumSq / Math.max(1, d0.length));
+            if (curRms > 0.001) {
+              const g = Math.min(0.95 / Math.max(0.001, peak), targetRms / curRms);
+              for (let ch = 0; ch < rendered.numberOfChannels; ch++) {
+                const dc = rendered.getChannelData(ch);
+                for (let i = 0; i < dc.length; i++) dc[i] *= g;
+              }
+            }
+          }
+          const wavBlob = audioBufferToWav(rendered, bitDepth);
+          const url = URL.createObjectURL(wavBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `VoxNova_Studio_${Date.now()}.wav`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+          showToast('تم تصدير الملف الصوتي بجودة الاستوديو WAV!', 'purple');
+        } catch (err) {
+          showToast('حدث خطأ أثناء التصدير', 'red');
+        }
+        setStatus('جاهز');
+      }
+
+      // =========================================================================
+      // PRESETS (ENHANCE & VOICE CHANGER)
+      // =========================================================================
+      function syncSlidersFromParams() {
+        const map = [
+          ['eq60', 'eq60Val', v => `${v > 0 ? '+' : ''}${v} dB`],
+          ['eq250', 'eq250Val', v => `${v > 0 ? '+' : ''}${v} dB`],
+          ['eq1000', 'eq1000Val', v => `${v > 0 ? '+' : ''}${v} dB`],
+          ['eq4000', 'eq4000Val', v => `${v > 0 ? '+' : ''}${v} dB`],
+          ['eq12000', 'eq12000Val', v => `${v > 0 ? '+' : ''}${v} dB`],
+          ['denoiseSlider', 'denoiseVal', v => `${v}%`, 'denoise'],
+          ['compressorSlider', 'compressorVal', v => `${v}%`, 'compressor'],
+          ['warmthSlider', 'warmthVal', v => `${v}%`, 'warmth'],
+          ['deesserSlider', 'deesserVal', v => `${v}%`, 'deesser'],
+          ['deplosiveSlider', 'deplosiveVal', v => `${v}%`, 'deplosive'],
+          ['exciterSlider', 'exciterVal', v => `${v}%`, 'exciter'],
+          ['stereoWidthSlider', 'stereoWidthVal', v => `${v}%`, 'stereoWidth'],
+          ['pitchSlider', 'pitchVal', v => `${v > 0 ? '+' : ''}${v} نصف نغمة`, 'pitch'],
+          ['reverbSlider', 'reverbVal', v => `${v}%`, 'reverb'],
+          ['delaySlider', 'delayVal', v => `${v}%`, 'delay'],
+          ['delayTimeSlider', 'delayTimeVal', v => `${Number(v).toFixed(2)}s`, 'delayTime'],
+          ['robotSlider', 'robotVal', v => `${v}%`, 'robot'],
+          ['distortionSlider', 'distortionVal', v => `${v}%`, 'distortion'],
+          ['chorusSlider', 'chorusVal', v => `${v}%`, 'chorus'],
+          ['panSlider', 'panVal', v => v === 0 ? 'وسط' : (v < 0 ? `يسار ${Math.round(Math.abs(v)*100)}%` : `يمين ${Math.round(v*100)}%`), 'pan'],
+          ['playbackSpeed', 'playbackSpeedVal', v => `${Number(v).toFixed(2)}x`, 'speed'],
+          ['masterVolume', 'masterVolumeVal', v => `${Math.round(v * 100)}%`, 'volume']
+        ];
+        map.forEach(([id, valId, fmt, key]) => {
+          const prop = key || id;
+          const el = document.getElementById(id);
+          const valEl = document.getElementById(valId);
+          if (el) el.value = params[prop];
+          if (valEl) valEl.textContent = fmt(params[prop]);
+        });
+        updateLiveDSPParams();
+      }
+
+      function applyEnhancePreset(name) {
+        prevParamsSnapshot = { ...params };
+        const presets = {
+          clean: { eq60: 0, eq250: 0, eq1000: 0, eq4000: 0, eq12000: 0, denoise: 0, compressor: 0, warmth: 0, deesser: 0, deplosive: 0, exciter: 0, stereoWidth: 0, reverb: 0 },
+          podcast: { eq60: 3, eq250: 2, eq1000: 1, eq4000: 4, eq12000: 2.5, denoise: 55, compressor: 65, warmth: 18, deesser: 40, deplosive: 50, exciter: 22, stereoWidth: 15 },
+          vocal: { eq60: -1, eq250: 0, eq1000: 2, eq4000: 4.5, eq12000: 4, denoise: 35, compressor: 58, warmth: 15, deesser: 45, deplosive: 35, exciter: 48, stereoWidth: 35, reverb: 20 },
+          cinema: { eq60: 6, eq250: 3, eq1000: -1, eq4000: 3, eq12000: 2, denoise: 45, compressor: 68, warmth: 24, deesser: 30, deplosive: 45, exciter: 25, stereoWidth: 40, reverb: 14 },
+          radio: { eq60: 2, eq250: 3, eq1000: 4, eq4000: 5, eq12000: 1, denoise: 50, compressor: 82, warmth: 28, deesser: 50, deplosive: 55, exciter: 30, stereoWidth: 20 },
+          youtube: { eq60: 2.5, eq250: 1, eq1000: 2, eq4000: 5, eq12000: 3.5, denoise: 48, compressor: 70, warmth: 15, deesser: 45, deplosive: 45, exciter: 42, stereoWidth: 25 },
+          poetry: { eq60: 4, eq250: 3, eq1000: 0, eq4000: 2.5, eq12000: 3, denoise: 30, compressor: 45, warmth: 22, deesser: 35, deplosive: 30, exciter: 35, stereoWidth: 45, reverb: 26 },
+          meeting: { eq60: -3, eq250: -1, eq1000: 4, eq4000: 5, eq12000: 1, denoise: 75, compressor: 65, warmth: 0, deesser: 35, deplosive: 65, exciter: 15, stereoWidth: 0 }
+        };
+        Object.assign(params, presets[name] || presets.clean);
+        syncSlidersFromParams();
+        document.querySelectorAll('#enhancePresetGrid .preset-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.enhancePreset === name);
+        });
+      }
+
+      function applyVoicePreset(name) {
+        prevParamsSnapshot = { ...params };
+        const presets = {
+          normal: { pitch: 0, reverb: 0, delay: 0, robot: 0, distortion: 0, voiceFilter: 'none', eq60: 0, eq4000: 0 },
+          robot: { pitch: -1, reverb: 18, delay: 14, delayTime: 0.12, robot: 85, distortion: 24, voiceFilter: 'vintage' },
+          deep: { pitch: -5.5, reverb: 28, delay: 10, robot: 0, distortion: 8, voiceFilter: 'none', eq60: 8, eq250: 4 },
+          chipmunk: { pitch: 6.5, reverb: 8, delay: 0, robot: 0, distortion: 0, voiceFilter: 'none', eq4000: 5, eq12000: 4 },
+          alien: { pitch: 3.5, reverb: 45, delay: 48, delayTime: 0.22, robot: 65, distortion: 15, voiceFilter: 'none' },
+          cave: { pitch: -1, reverb: 85, delay: 52, delayTime: 0.42, robot: 0, distortion: 0, voiceFilter: 'none' },
+          telephone: { pitch: 0, reverb: 0, delay: 0, robot: 0, distortion: 26, voiceFilter: 'telephone', eq1000: 5 },
+          vintage: { pitch: 0, reverb: 15, delay: 8, robot: 0, distortion: 34, voiceFilter: 'vintage', eq250: 3, eq12000: -6 },
+          dark: { pitch: -4, reverb: 62, delay: 25, delayTime: 0.36, robot: 12, distortion: 18, voiceFilter: 'dark' },
+          singer: { pitch: 0, reverb: 36, delay: 20, delayTime: 0.30, robot: 0, distortion: 0, chorus: 25, voiceFilter: 'none', compressor: 65, eq4000: 5, eq12000: 6 },
+          choir: { pitch: 0, reverb: 55, delay: 24, delayTime: 0.22, robot: 0, distortion: 0, chorus: 85, voiceFilter: 'none', compressor: 60, eq4000: 4, eq12000: 5 },
+          megaphone: { pitch: 0.5, reverb: 12, delay: 14, delayTime: 0.16, robot: 0, distortion: 42, chorus: 0, voiceFilter: 'megaphone', eq1000: 6, eq4000: 5 }
+        };
+        Object.assign(params, presets[name] || presets.normal);
+        syncSlidersFromParams();
+        document.querySelectorAll('#voicePresetGrid .preset-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.voicePreset === name);
+        });
+      }
+
+      // =========================================================================
+      // SMART AI AUDIO ASSISTANT (Arabic + English Natural Language DSP Engine)
+      // =========================================================================
+      function appendAiMessage(text, isUser = false, badges = []) {
+        const box = document.getElementById('aiChatMessages');
+        const wrap = document.createElement('div');
+        if (isUser) {
+          wrap.className = 'bg-red-500/20 border border-red-500/40 rounded-2xl rounded-tl-sm p-2.5 text-white mr-6';
+          wrap.textContent = text;
+        } else {
+          wrap.className = 'bg-purple-950/50 border border-purple-500/30 rounded-2xl rounded-tr-sm p-3 text-zinc-100 ml-3 leading-relaxed';
+          const p = document.createElement('div');
+          p.textContent = text;
+          wrap.appendChild(p);
+          if (badges.length > 0) {
+            const bRow = document.createElement('div');
+            bRow.className = 'flex flex-wrap gap-1 mt-2';
+            badges.forEach(b => {
+              const span = document.createElement('span');
+              span.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 border border-purple-400/40 text-purple-200';
+              span.textContent = b;
+              bRow.appendChild(span);
+            });
+            wrap.appendChild(bRow);
+          }
+        }
+        box.appendChild(wrap);
+        box.scrollTop = box.scrollHeight;
+      }
+
+      function processAiCommand(rawText) {
+        const text = rawText.trim();
+        if (!text) return;
+        appendAiMessage(text, true);
+
+        const t = text.toLowerCase();
+        prevParamsSnapshot = { ...params };
+        const actions = [];
+        let needsReplay = false;
+
+        // Reset command
+        if (/إعادة ضبط|اعادة ضبط|رجع كل|طبيعي|امسح المؤثرات|بدون مؤثرات|reset/.test(t)) {
+          params = defaultParams();
+          syncSlidersFromParams();
+          actions.push('إعادة ضبط كاملة');
+          appendAiMessage('تمت إعادة ضبط جميع المؤثرات والمعادل إلى الوضع الطبيعي الصافي.', false, actions);
+          if (isPlaying) startPlayback();
+          return;
+        }
+
+        // Podcast / Clean / Denoise
+        if (/بودكاست|podcast/.test(t)) {
+          applyEnhancePreset('podcast');
+          actions.push('قالب بودكاست برو');
+          needsReplay = true;
+        }
+        if (/دوشة|ضوضاء|نضف|نظف|شوشرة|هواء|صافي|نقي|noise/.test(t)) {
+          params.denoise = Math.min(100, Math.max(params.denoise, 72));
+          params.compressor = Math.max(params.compressor, 55);
+          params.eq4000 = Math.max(params.eq4000, 3);
+          actions.push(`عزل الضوضاء ${params.denoise}%`);
+          needsReplay = true;
+        }
+
+        // Cinematic / Deep / Giant
+        if (/سينما|معلق|فخم|وثائقي|cinema/.test(t)) {
+          applyEnhancePreset('cinema');
+          params.pitch = -1.5;
+          actions.push('تعليق سينمائي فخم');
+          needsReplay = true;
+        } else if (/عميق|تخين|غليظ|عملاق|رجل|deep|giant/.test(t)) {
+          params.pitch = -5;
+          params.eq60 = 7.5;
+          params.eq250 = 3.5;
+          actions.push('تعميق الصوت (-5)');
+          needsReplay = true;
+        }
+
+        // Chipmunk / High / Cartoon / Kid
+        if (/سنجاب|كارتون|رفيع|طفل|مضحك|chipmunk/.test(t)) {
+          applyVoicePreset('chipmunk');
+          actions.push('صوت سنجاب / كارتون');
+          needsReplay = true;
+        }
+
+        // Robot / Alien
+        if (/روبوت|آلي|الي|robot/.test(t)) {
+          params.robot = 82;
+          params.distortion = Math.max(params.distortion, 20);
+          actions.push('تأثير روبوت 82%');
+          needsReplay = true;
+        }
+        if (/فضائي|فضاء|alien/.test(t)) {
+          params.robot = Math.max(params.robot, 65);
+          params.reverb = Math.max(params.reverb, 48);
+          params.delay = Math.max(params.delay, 42);
+          actions.push('مؤثر فضائي');
+          needsReplay = true;
+        }
+
+        // Singer / Vocal studio
+        if (/غناء|غنائي|أغنية|اغنية|مطرب|أوتوتيون|اوتوتيون|vocal|singer/.test(t) && !/ألف موسيقى|اصنع موسيقى|موسيقى/.test(t)) {
+          applyVoicePreset('singer');
+          actions.push('معالجة استوديو غنائي');
+          needsReplay = true;
+        }
+
+        // Telephone / Radio / Vintage / Cave / Dark
+        if (/تليفون|تلفون|هاتف|مكالمة|phone/.test(t)) {
+          applyVoicePreset('telephone');
+          actions.push('صوت هاتف');
+          needsReplay = true;
+        }
+        if (/راديو|قديم|كلاسيك|إذاعة|اذاعة|radio|vintage/.test(t)) {
+          applyVoicePreset('vintage');
+          actions.push('راديو كلاسيك');
+          needsReplay = true;
+        }
+        if (/كهف|ملعب|قاعة|مسجد|كبير|cave|hall/.test(t)) {
+          params.reverb = 82;
+          params.delay = Math.max(params.delay, 38);
+          actions.push('صدى قاعة/كهف 82%');
+          needsReplay = true;
+        }
+        if (/مرعب|رعب|شبح|همس|مظلم|horror|scary/.test(t)) {
+          applyVoicePreset('dark');
+          actions.push('همس مرعب');
+          needsReplay = true;
+        }
+
+        // Specific sliders: Reverb / Echo / Bass / Treble / Speed / Distortion
+        if (/صدى|ريفيرب|reverb/.test(t)) {
+          if (/قلل|خفف|شيل|بدون|أوقف/.test(t)) {
+            params.reverb = 0;
+            actions.push('إيقاف الصدى');
+          } else if (/شوية|خفيف|بسيط/.test(t)) {
+            params.reverb = Math.max(params.reverb, 26);
+            actions.push('صدى خفيف 26%');
+          } else {
+            params.reverb = Math.max(params.reverb, 58);
+            actions.push(`صدى ${params.reverb}%`);
+          }
+          needsReplay = true;
+        }
+
+        if (/ترديد|إيكو|ايكو|تكرر|delay|echo/.test(t)) {
+          if (/قلل|شيل|بدون/.test(t)) {
+            params.delay = 0;
+            actions.push('إيقاف الترديد');
+          } else {
+            params.delay = Math.max(params.delay, 42);
+            actions.push(`ترديد إيكو ${params.delay}%`);
+          }
+          needsReplay = true;
+        }
+
+        if (/بيز|bass|ضخم/.test(t)) {
+          if (/قلل|خفف/.test(t)) {
+            params.eq60 = Math.max(-10, params.eq60 - 5);
+            actions.push(`تقليل البيز (${params.eq60}dB)`);
+          } else {
+            params.eq60 = Math.min(12, params.eq60 + 5.5);
+            actions.push(`زيادة البيز (+${params.eq60}dB)`);
+          }
+          needsReplay = true;
+        }
+
+        if (/حدة|لمعان|وضوح|treble|bright/.test(t)) {
+          if (/قلل|خفف/.test(t)) {
+            params.eq4000 = Math.max(-10, params.eq4000 - 4);
+            params.eq12000 = Math.max(-10, params.eq12000 - 4);
+            actions.push('تقليل الحدة');
+          } else {
+            params.eq4000 = Math.min(12, params.eq4000 + 4.5);
+            params.eq12000 = Math.min(12, params.eq12000 + 4.5);
+            actions.push('زيادة الوضوح واللمعان');
+          }
+          needsReplay = true;
+        }
+
+        if (/أسرع|اسرع|سرع|سريع|fast/.test(t)) {
+          params.speed = Math.min(1.75, +(params.speed + 0.25).toFixed(2));
+          actions.push(`تسريع إلى ${params.speed}x`);
+          needsReplay = true;
+        }
+        if (/أبطأ|ابطأ|بطء|بطيء|slow/.test(t)) {
+          params.speed = Math.max(0.6, +(params.speed - 0.2).toFixed(2));
+          actions.push(`إبطاء إلى ${params.speed}x`);
+          needsReplay = true;
+        }
+
+        // Destructive waveform commands via AI
+        if (/تلاشي|fade/.test(t)) {
+          applyFade('in');
+          applyFade('out');
+          actions.push('تلاشي دخول وخروج');
+        }
+        if (/وحد|توحيد|ارفع الصوت|normalize/.test(t)) {
+          applyNormalize();
+          actions.push('توحيد مستوى الصوت');
+        }
+        if (/اعكس|عكس|بالمقلوب|reverse/.test(t)) {
+          applyReverse();
+          actions.push('عكس الصوت');
+        }
+        if (/صمت|فراغ/.test(t)) {
+          applyTrimSilence();
+          actions.push('إزالة الصمت');
+        }
+        if (/كرر|تكرار|دبل|مرتين|duplicate/.test(t)) {
+          applyDuplicate();
+          actions.push('تكرار المقطع ×2');
+        }
+        if (/كورال|هارموني|جماعي|chorus/.test(t)) {
+          params.chorus = 80;
+          params.reverb = Math.max(params.reverb, 40);
+          actions.push('كورال هارموني 80%');
+        }
+        if (/ميكروفون|ميجافون|مكبر|megaphone/.test(t)) {
+          applyVoicePreset('megaphone');
+          actions.push('تأثير ميكروفون قوي');
+        }
+        if (/مطر|أمطار|rain/.test(t)) {
+          toggleAmbient('rain', true);
+          actions.push('أجواء مطر هادئ');
+        }
+        if (/فينيل|اسطوانة|vinyl/.test(t)) {
+          toggleAmbient('vinyl', true);
+          actions.push('أجواء فينيل Lo-Fi');
+        }
+        if (/اكتب كلمات|ألف كلمات|توليد كلمات|كلمات جديدة/.test(t)) {
+          switchTab('music');
+          generateAiLyrics();
+          actions.push('توليد كلمات أغنية جديدة');
+        }
+        if (/سين|صفير|دي إيسر|de-?esser/.test(t)) {
+          params.deesser = 65;
+          actions.push('تخفيف حرف السين 65%');
+        }
+        if (/فرقعة|فرقعات|pop/.test(t)) {
+          params.deplosive = 70;
+          actions.push('فلتر إزالة الفرقعات 70%');
+        }
+        if (/ستيريو|واسع|مكاني|عمق|width/.test(t)) {
+          params.stereoWidth = 65;
+          actions.push('توسيع الستيريو 65%');
+        }
+        if (/بريق|هواء|exciter/.test(t)) {
+          params.exciter = 60;
+          actions.push('بريق ونقاء الصوت 60%');
+        }
+        if (/ماسترنج|تلقائي|ظبط الصوت|حسن الصوت بالكامل|master/.test(t)) {
+          runAiAutoMaster();
+          actions.push('ماسترنج ذكي AI');
+        }
+        if (/بوابة|همهمة|gate/.test(t)) {
+          applyNoiseGate();
+          actions.push('بوابة الضوضاء');
+        }
+        if (/موازنة|وازن|هادئ|level/.test(t)) {
+          applyAutoLeveler();
+          actions.push('موازنة ذكية لمستوى الصوت');
+        }
+        if (/اعزل|عزل الصوت|isolate/.test(t)) {
+          applyVocalIsolator();
+          actions.push('عزل الصوت البشري');
+        }
+        if (/يوتيوب|تيك توك|محتوى|youtube/.test(t)) {
+          applyEnhancePreset('youtube');
+          actions.push('قالب يوتيوب وصناع المحتوى');
+        }
+        if (/شعر|إلقاء|تلاوة|poetry/.test(t)) {
+          applyEnhancePreset('poetry');
+          actions.push('قالب إلقاء وتلاوة');
+        }
+
+        // Music composition trigger from AI
+        if (/موسيقى|لحن|ألف|الف|بيت|beat|music/.test(t)) {
+          switchTab('music');
+          if (/حزين|درامي/.test(t)) {
+            document.getElementById('musicGenreSelect').value = 'ballad';
+            document.getElementById('musicScaleSelect').value = 'nahawand';
+          } else if (/راب|تراب|حماس/.test(t)) {
+            document.getElementById('musicGenreSelect').value = 'trap';
+            document.getElementById('musicScaleSelect').value = 'kurd';
+          } else if (/شرقي|مبهج|فرح/.test(t)) {
+            document.getElementById('musicGenreSelect').value = 'oriental';
+            document.getElementById('musicScaleSelect').value = 'hijaz';
+          }
+          composeMusicFromLyrics(true);
+          actions.push('تأليف وتشغيل موسيقى للكلمات');
+        }
+
+        syncSlidersFromParams();
+
+        if (actions.length === 0) {
+          // Intelligent fallback: polish audio slightly and guide user
+          params.denoise = Math.max(params.denoise, 40);
+          params.compressor = Math.max(params.compressor, 50);
+          params.eq4000 = Math.max(params.eq4000, 2.5);
+          syncSlidersFromParams();
+          appendAiMessage(
+            'طبقت تحسيناً ذكياً متوازناً للوضوح والضغط! يمكنك أيضاً طلب تعديلات أدق مثل: "خلي صوتي عميق مع صدى كهف" أو "حول الصوت لروبوت" أو "ألف موسيقى لكلمات أغنيتي".',
+            false,
+            ['تحسين ذكي تلقائي']
+          );
+        } else {
+          appendAiMessage(
+            'تم تنفيذ طلبك وتطبيق التعديلات على محرك الصوت بنجاح! اضغط تشغيل للاستماع للنتيجة أو اكتب تعديلاً إضافياً.',
+            false,
+            actions
+          );
+          showToast('المساعد الذكي طبّق التعديل بنجاح!', 'purple');
+        }
+
+      }
+
+      // AI Voice Command Input (Web Speech API with graceful fallback)
+      function startAiVoiceCommand() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) {
+          showToast('المتصفح الحالي لا يدعم الأوامر الصوتية — اكتب وصف التعديل مباشرة', 'red');
+          return;
+        }
+        const btn = document.getElementById('btnAiVoiceCmd');
+        const rec = new SR();
+        rec.lang = 'ar-EG';
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        btn.classList.add('recording-pulse');
+        showToast('تحدث الآن لوصف التعديل المطلوب...', 'red');
+        rec.onresult = (ev) => {
+          const transcript = ev.results?.[0]?.[0]?.transcript || '';
+          if (transcript) {
+            document.getElementById('aiChatInput').value = transcript;
+            processAiCommand(transcript);
+          }
+        };
+        rec.onerror = () => showToast('تعذر سماع الأمر الصوتي، جرب مرة أخرى أو اكتب الوصف', 'red');
+        rec.onend = () => btn.classList.remove('recording-pulse');
+        try { rec.start(); } catch (e) { btn.classList.remove('recording-pulse'); }
+      }
+
+      // =========================================================================
+      // LYRICS-TO-MUSIC COMPOSER & MULTI-TRACK SYNTH ENGINE
+      // =========================================================================
+      const LYRIC_SAMPLES = {
+        romantic: `في ليل المدينة والنجوم بتحكي حكايتنا\nنبض القلوب بيغني على أوتار محبتنا\nلو غابت الشمس ضيك يملا سمانا نور\nوعشانك أنسى كل خوف وكل جرح يدور`,
+        rap: `طالع لفوق مفيش حدود ولا في يوم هنقف\nصوتي بيرن في المكان والكل هنا بيعرف\nنار في الكلام إيقاع سريع ما بنرجعش ورا\nتاج النجاح فوق الراس والرحلة لسه بتبدأ`,
+        sad: `غاب القمر وساب وراه دمعة على الشباك\nالذكريات بتعدي وتقول لي فين ألقاك\nصوت المطر بيحكي عن فراق طال ومالوش نهاية\nوقلبي لسه مستنيك في آخر الحكاية`,
+        oriental: `اضحك وغني الليلة فرحتنا مالية الدار\nعلى صوت الإيقاع والعود نرقص سوا بالنهار\nالدنيا حلوة بوجودك والفرحة ملهاش مثيل\nيلا نغني للحياة ونعيش حلمنا الجميل`
+      };
+
+      function analyzeLyrics(lyrics) {
+        const clean = lyrics.trim();
+        const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+        const text = clean.toLowerCase();
+
+        const scores = {
+          sad: (text.match(/حزن|دمع|فراق|جرح|غاب|مطر|وحيد|ألم|بكي|وداع|ليل|sad|cry|alone/g) || []).length,
+          rap: (text.match(/نار|قوة|نصر|تاج|فوق|نجاح|حرب|سريع|حدود|بطل|ملك|fire|king|win/g) || []).length,
+          happy: (text.match(/فرح|اضحك|نرقص|حلو|جميل|شمس|نور|حياة|سعيد|عيد|happy|dance|sun/g) || []).length,
+          romantic: (text.match(/حب|قلب|نجوم|قمر|عشق|حلم|روح|ضيك|محب|شوق|love|heart|star/g) || []).length
+        };
+
+        let mood = 'رومانسي دافئ';
+        let genre = 'oriental';
+        let scale = 'nahawand';
+        let bpm = 96;
+        let rootMidi = 57; // A3
+
+        if (scores.rap >= scores.sad && scores.rap >= scores.happy && scores.rap > 0) {
+          mood = 'حماسي / قوي';
+          genre = 'trap';
+          scale = 'kurd';
+          bpm = 132;
+          rootMidi = 52; // E3
+        } else if (scores.sad > scores.happy && scores.sad >= scores.romantic && scores.sad > 0) {
+          mood = 'حزين / درامي';
+          genre = 'ballad';
+          scale = 'nahawand';
+          bpm = 78;
+          rootMidi = 55; // G3
+        } else if (scores.happy > scores.sad && scores.happy > 0) {
+          mood = 'مبهج / احتفالي';
+          genre = 'oriental';
+          scale = 'hijaz';
+          bpm = 114;
+          rootMidi = 60; // C4
+        } else if (scores.romantic > 0) {
+          mood = 'رومانسي حالم';
+          genre = 'lofi';
+          scale = 'minor';
+          bpm = 88;
+          rootMidi = 57;
+        }
+
+        // Deterministic melody seed from lyrics hash so every lyric produces a unique tune!
+        let hash = 0;
+        for (let i = 0; i < clean.length; i++) {
+          hash = ((hash << 5) - hash + clean.charCodeAt(i)) | 0;
+        }
+        const pattern = [];
+        for (let s = 0; s < 16; s++) {
+          const v = Math.abs((hash >> (s % 12)) + s * 7 + (clean.charCodeAt(s % Math.max(1, clean.length)) || 3));
+          pattern.push(v % 8);
+        }
+
+        return { mood, genre, scale, bpm, rootMidi, pattern, lines };
+      }
+
+      function renderKaraokeLines(activeIdx = -1) {
+        const box = document.getElementById('karaokeBox');
+        box.innerHTML = '';
+        const lines = musicState.lyricLines.length ? musicState.lyricLines : ['اكتب كلمات أغنيتك واضغط تأليف الموسيقى'];
+        lines.forEach((line, idx) => {
+          const div = document.createElement('div');
+          div.className = `lyric-line px-2.5 py-1.5 rounded-lg ${idx === activeIdx ? 'active-lyric font-bold' : 'text-zinc-400'}`;
+          div.textContent = line;
+          box.appendChild(div);
+        });
+      }
+
+      function composeMusicFromLyrics(autoPlay = false) {
+        const lyrics = document.getElementById('lyricsInput').value;
+        const result = analyzeLyrics(lyrics);
+        musicState.mood = result.mood;
+        musicState.genre = result.genre;
+        musicState.scale = result.scale;
+        musicState.bpm = result.bpm;
+        musicState.rootMidi = result.rootMidi;
+        musicState.melodyPattern = result.pattern;
+        musicState.lyricLines = result.lines;
+
+        document.getElementById('musicMoodBadge').textContent = result.mood;
+        document.getElementById('musicScaleBadge').textContent = SCALE_LABELS[result.scale] || result.scale;
+        document.getElementById('musicBpmBadge').textContent = `${result.bpm} BPM`;
+        document.getElementById('musicGenreSelect').value = result.genre;
+        document.getElementById('musicScaleSelect').value = result.scale;
+        document.getElementById('musicBpmSlider').value = result.bpm;
+        document.getElementById('musicBpmVal').textContent = `${result.bpm} BPM`;
+
+        renderKaraokeLines(0);
+        showToast(`تم تأليف لحن (${result.mood}) على مقام ${SCALE_LABELS[result.scale]}!`, 'purple');
+
+        if (autoPlay) {
+          if (musicState.isPlaying) stopMusicSequencer();
+          startMusicSequencer();
+        }
+      }
+
+      // Web Audio Multi-Instrument Step Trigger
+      function playMusicStep(ctx, dest, step, time, state) {
+        const scale = SCALES[state.scale] || SCALES.nahawand;
+        const bar = Math.floor(step / 16) % 4;
+        const s = step % 16;
+
+        // 1. DRUMS
+        if (state.mix.drums > 0.02) {
+          const kickPattern = state.genre === 'trap'
+            ? [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+            : state.genre === 'oriental'
+              ? [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+              : [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
+
+          const snarePattern = state.genre === 'trap'
+            ? [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+            : [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
+
+          const hatPattern = state.genre === 'trap'
+            ? [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]
+            : [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1];
+
+          if (kickPattern[s]) {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.frequency.setValueAtTime(140, time);
+            osc.frequency.exponentialRampToValueAtTime(42, time + 0.14);
+            g.gain.setValueAtTime(0.65 * state.mix.drums, time);
+            g.gain.exponentialRampToValueAtTime(0.001, time + 0.24);
+            osc.connect(g); g.connect(dest);
+            osc.start(time); osc.stop(time + 0.25);
+          }
+
+          if (snarePattern[s]) {
+            const noiseBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.15), ctx.sampleRate);
+            const d = noiseBuf.getChannelData(0);
+            for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+            const n = ctx.createBufferSource();
+            n.buffer = noiseBuf;
+            const flt = ctx.createBiquadFilter();
+            flt.type = 'highpass'; flt.frequency.value = 950;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.32 * state.mix.drums, time);
+            g.gain.exponentialRampToValueAtTime(0.001, time + 0.14);
+            n.connect(flt); flt.connect(g); g.connect(dest);
+            n.start(time);
+          }
+
+          if (hatPattern[s]) {
+            const osc = ctx.createOscillator();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(7200 + (s % 2) * 800, time);
+            const flt = ctx.createBiquadFilter();
+            flt.type = 'highpass'; flt.frequency.value = 6000;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.07 * state.mix.drums, time);
+            g.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+            osc.connect(flt); flt.connect(g); g.connect(dest);
+            osc.start(time); osc.stop(time + 0.045);
+          }
+        }
+
+        // 2. CHORDS PAD (Every 8 steps)
+        if (state.mix.chords > 0.02 && (s === 0 || s === 8)) {
+          const chordDegs = state.chordProgression[bar % state.chordProgression.length];
+          const chordDur = (60 / state.bpm) * 2;
+          chordDegs.forEach(deg => {
+            const noteMidi = state.rootMidi + scale[deg % scale.length] + (deg >= scale.length ? 12 : 0);
+            const osc = ctx.createOscillator();
+            osc.type = state.genre === 'synthwave' ? 'sawtooth' : 'triangle';
+            osc.frequency.setValueAtTime(midiToFreq(noteMidi), time);
+            const flt = ctx.createBiquadFilter();
+            flt.type = 'lowpass'; flt.frequency.value = state.genre === 'lofi' ? 950 : 1900;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.001, time);
+            g.gain.linearRampToValueAtTime(0.09 * state.mix.chords, time + 0.08);
+            g.gain.exponentialRampToValueAtTime(0.001, time + chordDur);
+            osc.connect(flt); flt.connect(g); g.connect(dest);
+            osc.start(time); osc.stop(time + chordDur + 0.02);
+          });
+        }
+
+        // 3. SUB BASS (Every 4 steps)
+        if (state.mix.bass > 0.02 && s % 4 === 0) {
+          const chordRoot = state.chordProgression[bar % state.chordProgression.length][0];
+          const bassMidi = state.rootMidi - 12 + scale[chordRoot % scale.length];
+          const osc = ctx.createOscillator();
+          osc.type = state.genre === 'trap' ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(midiToFreq(bassMidi), time);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.28 * state.mix.bass, time);
+          g.gain.exponentialRampToValueAtTime(0.001, time + (60 / state.bpm) * 0.9);
+          osc.connect(g); g.connect(dest);
+          osc.start(time); osc.stop(time + (60 / state.bpm));
+        }
+
+        // 4. EXPRESSIVE MELODY
+        if (state.mix.melody > 0.02 && (s % 2 === 0 || s === 7 || s === 15)) {
+          const deg = state.melodyPattern[s % state.melodyPattern.length];
+          const melMidi = state.rootMidi + 12 + scale[deg % scale.length];
+          const osc = ctx.createOscillator();
+          osc.type = state.genre === 'oriental' ? 'sawtooth' : (state.genre === 'lofi' ? 'sine' : 'triangle');
+          osc.frequency.setValueAtTime(midiToFreq(melMidi), time);
+          const flt = ctx.createBiquadFilter();
+          flt.type = 'lowpass';
+          flt.frequency.setValueAtTime(state.genre === 'oriental' ? 2800 : 2100, time);
+          flt.frequency.exponentialRampToValueAtTime(750, time + 0.28);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.001, time);
+          g.gain.linearRampToValueAtTime(0.16 * state.mix.melody, time + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, time + 0.34);
+          osc.connect(flt); flt.connect(g); g.connect(dest);
+          osc.start(time); osc.stop(time + 0.36);
+        }
+      }
+
+      function startMusicSequencer() {
+        const ctx = ensureAudioCtx();
+        if (musicState.isPlaying) {
+          stopMusicSequencer();
+          return;
+        }
+        musicState.isPlaying = true;
+        musicState.step = 0;
+        document.getElementById('musicPlayLabel').textContent = 'إيقاف اللحن';
+
+        const stepMs = (60 / musicState.bpm / 4) * 1000;
+        const tick = () => {
+          if (!musicState.isPlaying) return;
+          playMusicStep(ctx, ctx.destination, musicState.step, ctx.currentTime + 0.02, musicState);
+          if (musicState.step % 16 === 0 && musicState.lyricLines.length > 0) {
+            const lineIdx = Math.floor(musicState.step / 16) % musicState.lyricLines.length;
+            renderKaraokeLines(lineIdx);
+          }
+          musicState.step++;
+        };
+        tick();
+        musicState.timerId = setInterval(tick, stepMs);
+      }
+
+      function stopMusicSequencer() {
+        musicState.isPlaying = false;
+        if (musicState.timerId) {
+          clearInterval(musicState.timerId);
+          musicState.timerId = null;
+        }
+        document.getElementById('musicPlayLabel').textContent = 'تشغيل اللحن';
+        renderKaraokeLines(-1);
+      }
+
+      function generateAiLyrics() {
+        const genre = document.getElementById('musicGenreSelect').value;
+        const bank = {
+          oriental: [
+            `على أنغام العود والليل الساهر بينا\nضحكتك نور القمر بتملى كل ليالينا\nإيقاع القلب بيعزف فرحة ملهاش حدود\nومعاك الدنيا بتغني وأحلى الأيام بتعود`,
+            `يا نسمة صيف عدت على باب الهوى\nخدت قلبي في لحظة وجمعنا سوا\nنرقص على النغم وننسى هم السنين\nوالليلة سهرنا حلو مع كل الغاليين`
+          ],
+          trap: [
+            `داخل الملعب بقوة والكل عارف اسمي\nمن الصفر طلعت للقمة وبنيت طريقي بعزمي\nإيقاع تقيل بيهز الأرض وصوتي سابق زماني\nمفيش مستحيل قدامي والنجاح هو عنواني`,
+            `الليل ده بتاعنا والأنوار والعين علينا\nكل خطوة بحساب والمجد بين إيدينا\nسرعة ونار في الكلام مفيش مكان للتراجع\nصوتنا أعلى من الكل والنجم دايماً ساطع`
+          ],
+          ballad: [
+            `في آخر الشارع لسه صدى خطواتك\nوالمطر بيكتب على الإزاز ذكرياتك\nحاولت أنسى بس قلبي لسه فاكر\nصوتك الهادي اللي كان في يوم مسافر`,
+            `يا ليل طويل خد مني حكاية شوقي\nغاب اللي كان نور السما فوقي\nالوتر بيعزف حزن ساكن في الضلوع\nوأنا بستناك تاني لحظة الرجوع`
+          ],
+          lofi: [
+            `فنجان قهوة وشباك مفتوح على الغيم\nهدوء الليل بيهمس لحن ناعم وحليم\nبنسيب الدوشة برا ونعيش لحظة سلام\nأفكارنا بترسم حلم جميل قبل المنام`
+          ],
+          cinematic: [
+            `من وسط العاصفة بتطلع شمس جديدة\nخطوة ورا خطوة بنكتب قصة مجيدة\nالصوت بيرن في الأفق زي الرعد القوي\nوالحلم الكبير في قلوبنا دايماً مستوي`
+          ],
+          synthwave: [
+            `أضواء النيون بترقص على طريق الليل\nموجة كهربا سريعة وإحساس جميل\nبنطير في عالم تاني بين النجوم واللون\nوالإيقاع النابض مالي كل الكون`
+          ]
+        };
+        const list = bank[genre] || bank.oriental;
+        const pick = list[Math.floor(Math.random() * list.length)];
+        document.getElementById('lyricsInput').value = pick;
+        composeMusicFromLyrics(false);
+        refreshAudioDevices();
+        showToast('تم تأليف كلمات أغنية جديدة مناسبة للنمط!', 'purple');
+      }
+
+      function regenerateMelodyVariation() {
+        const pattern = [];
+        for (let s = 0; s < 16; s++) {
+          pattern.push(Math.floor(Math.random() * 8));
+        }
+        musicState.melodyPattern = pattern;
+        showToast('تم توليد تنويعة لحنية جديدة على نفس المقام!', 'purple');
+        if (!musicState.isPlaying) startMusicSequencer();
+      }
+
+      async function exportBeatWav() {
+        setStatus('جاري تصدير الموسيقى...');
+        try {
+          const sr = 44100;
+          const stepSec = 60 / musicState.bpm / 4;
+          const totalSteps = 64; // 4 full bars
+          const dur = totalSteps * stepSec + 0.8;
+          const offline = new OfflineAudioContext(2, Math.ceil(dur * sr), sr);
+          const bus = offline.createGain();
+          bus.gain.value = 0.85;
+          bus.connect(offline.destination);
+          for (let s = 0; s < totalSteps; s++) {
+            playMusicStep(offline, bus, s, s * stepSec, musicState);
+          }
+          const rendered = await offline.startRendering();
+          const blob = audioBufferToWav(rendered);
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `VoxNova_Beat_${musicState.genre}_${musicState.bpm}BPM.wav`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+          showToast('تم تصدير المقطوعة الموسيقية WAV بنجاح!', 'purple');
+        } catch (e) {
+          showToast('تعذر تصدير الموسيقى', 'red');
+        }
+        setStatus('جاهز');
+      }
+
+      // Procedural Ambient Soundscape Engine (Rain, Vinyl Crackle, Night Wind, Pink Noise)
+      function stopAmbient() {
+        ambientState.nodes.forEach(n => { try { n.stop(); } catch (e) {} try { n.disconnect(); } catch (e) {} });
+        ambientState.nodes = [];
+        ambientState.gainNode = null;
+        ambientState.active = null;
+        document.querySelectorAll('#ambientGrid .preset-card').forEach(c => c.classList.remove('selected'));
+      }
+
+      function toggleAmbient(type, forceOn = false) {
+        if (ambientState.active === type && !forceOn) {
+          stopAmbient();
+          showToast('تم إيقاف الأجواء الخلفية', 'purple');
+          return;
+        }
+        stopAmbient();
+        const ctx = ensureAudioCtx();
+        const len = ctx.sampleRate * 3;
+        const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+
+        for (let ch = 0; ch < 2; ch++) {
+          const d = buf.getChannelData(ch);
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < len; i++) {
+            const white = Math.random() * 2 - 1;
+            if (type === 'vinyl') {
+              const crackle = Math.random() > 0.9982 ? (Math.random() * 2 - 1) * 0.9 : 0;
+              d[i] = white * 0.03 + crackle;
+            } else {
+              b0 = 0.997 * b0 + white * 0.029;
+              b1 = 0.985 * b1 + white * 0.032;
+              b2 = 0.950 * b2 + white * 0.048;
+              d[i] = (b0 + b1 + b2 + white * 0.015) * 1.4;
+            }
+          }
+        }
+
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+
+        const flt = ctx.createBiquadFilter();
+        if (type === 'rain') { flt.type = 'bandpass'; flt.frequency.value = 1400; flt.Q.value = 0.6; }
+        else if (type === 'wind') { flt.type = 'lowpass'; flt.frequency.value = 420; flt.Q.value = 2.5; }
+        else if (type === 'vinyl') { flt.type = 'highpass'; flt.frequency.value = 600; }
+        else { flt.type = 'lowpass'; flt.frequency.value = 1800; }
+
+        const gain = ctx.createGain();
+        gain.gain.value = ambientState.volume * 0.45;
+
+        src.connect(flt);
+        flt.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
+
+        ambientState.active = type;
+        ambientState.gainNode = gain;
+        ambientState.nodes = [src, flt, gain];
+        document.querySelectorAll('#ambientGrid .preset-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.ambient === type);
+        });
+        const names = { rain: 'مطر هادئ', vinyl: 'فينيل Lo-Fi', wind: 'نسيم الليل', pink: 'تركيز هادئ' };
+        showToast(`تم تشغيل أجواء: ${names[type] || type}`, 'purple');
+      }
+
+      async function mixVocalWithGeneratedMusic() {
+        if (!currentBuffer) {
+          loadDemoAudio();
+        }
+        setStatus('جاري دمج الصوت مع الموسيقى...');
+        try {
+          const sr = currentBuffer.sampleRate;
+          const dur = Math.max(currentBuffer.duration, 8);
+          const offline = new OfflineAudioContext(2, Math.ceil(dur * sr), sr);
+
+          // 1. Render Vocal with current DSP
+          const vSrc = offline.createBufferSource();
+          vSrc.buffer = currentBuffer;
+          vSrc.playbackRate.value = Math.max(0.25, Math.min(3.0, params.speed * Math.pow(2, params.pitch / 12)));
+          const ir = createImpulseResponse(offline, 2.0, 2.4);
+          buildDSPChain(offline, vSrc, offline.destination, params, isBypassed, ir);
+          vSrc.start(0);
+
+          // 2. Render Music Track into same offline context
+          const musicBus = offline.createGain();
+          musicBus.gain.value = 0.58;
+          musicBus.connect(offline.destination);
+          const stepSec = 60 / musicState.bpm / 4;
+          const totalSteps = Math.floor(dur / stepSec);
+          for (let s = 0; s < totalSteps; s++) {
+            playMusicStep(offline, musicBus, s, s * stepSec, musicState);
+          }
+
+          const mixed = await offline.startRendering();
+          pushUndo();
+          setNewBuffer(mixed, `أغنية مدمجة (${musicState.mood})`);
+          saveCurrentToTakes(`دمج غنائي + موسيقى`);
+          showToast('تم دمج صوتك مع الموسيقى بنجاح! اضغط تشغيل للاستماع.', 'purple');
+        } catch (e) {
+          showToast('تعذر دمج الموسيقى مع الصوت', 'red');
+        }
+        setStatus('جاهز');
+      }
+
+      // =========================================================================
+      // SOUNDBOARD SFX & METRONOME
+      // =========================================================================
+      function triggerSfx(type) {
+        const ctx = ensureAudioCtx();
+        const now = ctx.currentTime;
+        if (type === 'boom') {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.frequency.setValueAtTime(110, now);
+          osc.frequency.exponentialRampToValueAtTime(28, now + 0.85);
+          g.gain.setValueAtTime(0.8, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+          osc.connect(g); g.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 0.92);
+        } else if (type === 'whoosh') {
+          const buf = ctx.createBuffer(1, ctx.sampleRate * 0.7, ctx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+          const src = ctx.createBufferSource(); src.buffer = buf;
+          const flt = ctx.createBiquadFilter();
+          flt.type = 'bandpass'; flt.Q.value = 2.5;
+          flt.frequency.setValueAtTime(200, now);
+          flt.frequency.exponentialRampToValueAtTime(2800, now + 0.35);
+          flt.frequency.exponentialRampToValueAtTime(300, now + 0.68);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.01, now);
+          g.gain.linearRampToValueAtTime(0.5, now + 0.3);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.68);
+          src.connect(flt); flt.connect(g); g.connect(ctx.destination);
+          src.start(now);
+        } else if (type === 'chime') {
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, now + idx * 0.08);
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.22, now + idx * 0.08);
+            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.65);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 0.68);
+          });
+        } else if (type === 'applause') {
+          for (let k = 0; k < 14; k++) {
+            const t = now + Math.random() * 0.7;
+            const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.08), ctx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / 600);
+            const src = ctx.createBufferSource(); src.buffer = buf;
+            const flt = ctx.createBiquadFilter(); flt.type = 'bandpass'; flt.frequency.value = 1200 + Math.random() * 1400;
+            const g = ctx.createGain(); g.gain.value = 0.25;
+            src.connect(flt); flt.connect(g); g.connect(ctx.destination);
+            src.start(t);
+          }
+        } else if (type === 'laser') {
+          const osc = ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(1600, now);
+          osc.frequency.exponentialRampToValueAtTime(120, now + 0.28);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.25, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.29);
+          osc.connect(g); g.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'heartbeat') {
+          [0, 0.22].forEach((offset, idx) => {
+            const osc = ctx.createOscillator();
+            osc.frequency.setValueAtTime(idx === 0 ? 75 : 62, now + offset);
+            osc.frequency.exponentialRampToValueAtTime(32, now + offset + 0.16);
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(idx === 0 ? 0.65 : 0.45, now + offset);
+            g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.18);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(now + offset); osc.stop(now + offset + 0.2);
+          });
+        }
+      }
+
+      function toggleMetronome() {
+        const btn = document.getElementById('btnMetronome');
+        if (metronomeActive) {
+          metronomeActive = false;
+          clearInterval(metronomeInterval);
+          btn.classList.remove('active-purple');
+          return;
+        }
+        const ctx = ensureAudioCtx();
+        metronomeActive = true;
+        metronomeBeat = 0;
+        btn.classList.add('active-purple');
+        const click = () => {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.frequency.value = metronomeBeat % 4 === 0 ? 1200 : 800;
+          g.gain.setValueAtTime(0.25, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
+          osc.connect(g); g.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 0.05);
+          metronomeBeat++;
+        };
+        click();
+        metronomeInterval = setInterval(click, (60 / musicState.bpm) * 1000);
+      }
+
+      // =========================================================================
+      // TAKES LIBRARY
+      // =========================================================================
+      function saveCurrentToTakes(label) {
+        if (!currentBuffer) return;
+        const id = 'take_' + Date.now() + '_' + Math.floor(Math.random() * 999);
+        takesLibrary.unshift({
+          id,
+          name: label || `مقطع ${takesLibrary.length + 1}`,
+          duration: currentBuffer.duration,
+          buffer: cloneAudioBuffer(currentBuffer)
+        });
+        renderTakesList();
+      }
+
+      function renderTakesList() {
+        const list = document.getElementById('takesList');
+        list.innerHTML = '';
+        if (takesLibrary.length === 0) {
+          list.innerHTML = '<div class="text-xs text-zinc-500 text-center py-4">لا توجد مقاطع محفوظة بعد</div>';
+          return;
+        }
+        takesLibrary.forEach(take => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-2 bg-white/[0.04] hover:bg-purple-500/15 border border-white/10 rounded-xl px-3 py-2 text-xs transition';
+          row.innerHTML = `
+            <div class="truncate">
+              <div class="font-bold text-white truncate">${take.name}</div>
+              <div class="text-[10px] text-zinc-400 font-mono">${formatTime(take.duration)}</div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button data-load-take="${take.id}" class="btn-surface px-2 py-1 rounded-lg text-[10px] font-bold">تحميل</button>
+              <button data-del-take="${take.id}" class="btn-surface px-2 py-1 rounded-lg text-[10px] text-red-400 hover:bg-red-500/20">حذف</button>
+            </div>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      // =========================================================================
+      // WAVEFORM + LIVE SPECTRUM + PITCH DETECTOR RENDER LOOP
+      // =========================================================================
+      const waveCanvas = document.getElementById('waveformCanvas');
+      const wCtx = waveCanvas.getContext('2d');
+
+      function resizeWaveformCanvas() {
+        const rect = waveCanvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        waveCanvas.width = Math.max(300, Math.floor(rect.width * dpr));
+        waveCanvas.height = Math.max(120, Math.floor(rect.height * dpr));
+        waveCacheDirty = true;
+        needsRedraw = true;
+      }
+
+      // Pre-render static waveform once into offscreen canvas (O(1) draw per frame!)
+      function rebuildWaveformCache() {
+        const W = waveCanvas.width;
+        const H = waveCanvas.height;
+        cachedWaveCanvas.width = W;
+        cachedWaveCanvas.height = H;
+        cachedWaveCtx.clearRect(0, 0, W, H);
+        if (!currentBuffer) { waveCacheDirty = false; return; }
+
+        const data = currentBuffer.getChannelData(0);
+        const step = Math.max(1, Math.floor(data.length / W));
+        const innerStep = Math.max(1, Math.floor(step / 10));
+        const mid = H / 2;
+
+        const waveGrad = cachedWaveCtx.createLinearGradient(0, 0, W, 0);
+        waveGrad.addColorStop(0, '#c084fc');
+        waveGrad.addColorStop(0.5, '#ffffff');
+        waveGrad.addColorStop(1, '#ff2247');
+        cachedWaveCtx.strokeStyle = waveGrad;
+        cachedWaveCtx.lineWidth = 1.6;
+        cachedWaveCtx.beginPath();
+        for (let x = 0; x < W; x++) {
+          let min = 1, max = -1;
+          const start = x * step;
+          const end = Math.min(data.length, start + step);
+          for (let j = start; j < end; j += innerStep) {
+            const val = data[j];
+            if (val < min) min = val;
+            if (val > max) max = val;
+          }
+          cachedWaveCtx.moveTo(x, mid + min * mid * 0.85);
+          cachedWaveCtx.lineTo(x, mid + max * mid * 0.85);
+        }
+        cachedWaveCtx.stroke();
+        waveCacheDirty = false;
+      }
+
+      // Fast strided pitch detection (zero allocations, throttled to ~8Hz)
+      function detectPitchNote(analyser) {
+        if (!analyser || !audioCtx) return '--';
+        analyser.getFloatTimeDomainData(reusablePitchBuf);
+        let rms = 0;
+        for (let i = 0; i < reusablePitchBuf.length; i += 2) {
+          rms += reusablePitchBuf[i] * reusablePitchBuf[i];
+        }
+        if (Math.sqrt(rms / (reusablePitchBuf.length / 2)) < 0.022) return '--';
+
+        let bestOffset = -1;
+        let bestCorr = 0;
+        const maxLag = 420;
+        for (let lag = 44; lag < maxLag; lag += 2) {
+          let corr = 0;
+          for (let i = 0; i < maxLag; i += 4) corr += reusablePitchBuf[i] * reusablePitchBuf[i + lag];
+          if (corr > bestCorr) {
+            bestCorr = corr;
+            bestOffset = lag;
+          }
+        }
+        if (bestOffset <= 0) return '--';
+        const freq = audioCtx.sampleRate / bestOffset;
+        if (freq < 65 || freq > 1200) return '--';
+        const noteNum = Math.round(12 * Math.log2(freq / 440) + 69);
+        const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        return noteNames[((noteNum % 12) + 12) % 12] + (Math.floor(noteNum / 12) - 1);
+      }
+
+      function updateSelectionBadge() {
+        const el = document.getElementById('selectionBadge');
+        needsRedraw = true;
+        if (!currentBuffer) return;
+        if (selStart === 0 && selEnd === 1) {
+          el.textContent = 'اسحب على الموجة لتحديد جزء للقص أو التعديل';
+        } else {
+          el.textContent = `محدد: ${formatTime(selStart * currentBuffer.duration)} ← ${formatTime(selEnd * currentBuffer.duration)}`;
+        }
+      }
+
+      function drawLoop(nowMs) {
+        requestAnimationFrame(drawLoop);
+
+        // Idle optimization: skip heavy redraws when audio is stopped and nothing changed
+        if (!isPlaying && !isRecording && !isDraggingSel && !needsRedraw && !waveCacheDirty) {
+          return;
+        }
+        needsRedraw = false;
+
+        const W = waveCanvas.width;
+        const H = waveCanvas.height;
+
+        // Background + subtle grid
+        wCtx.fillStyle = '#07050c';
+        wCtx.fillRect(0, 0, W, H);
+        wCtx.strokeStyle = 'rgba(255,255,255,0.04)';
+        wCtx.lineWidth = 1;
+        wCtx.beginPath();
+        for (let y = H * 0.25; y < H; y += H * 0.25) {
+          wCtx.moveTo(0, y); wCtx.lineTo(W, y);
+        }
+        wCtx.stroke();
+
+        // 1. Live Spectrum Bars (single gradient reused across all bars!)
+        const activeAnalyser = isRecording ? liveMicAnalyser : (isPlaying ? masterAnalyserMain : null);
+        if (activeAnalyser && visualizerMode !== 2) {
+          activeAnalyser.getByteFrequencyData(reusableFreqBins);
+          const barCount = 64;
+          const barW = W / barCount;
+          const specGrad = wCtx.createLinearGradient(0, H, 0, H * 0.12);
+          specGrad.addColorStop(0, 'rgba(147, 51, 234, 0.35)');
+          specGrad.addColorStop(0.6, 'rgba(255, 34, 71, 0.58)');
+          specGrad.addColorStop(1, 'rgba(255, 255, 255, 0.88)');
+          wCtx.fillStyle = specGrad;
+          for (let i = 0; i < barCount; i++) {
+            const barH = (reusableFreqBins[i * 2] / 255) * H * 0.85;
+            if (barH > 1) wCtx.fillRect(i * barW + 1, H - barH, Math.max(2, barW - 2), barH);
+          }
+
+          if (nowMs - lastPitchCheckMs > 130) {
+            lastPitchCheckMs = nowMs;
+            const note = detectPitchNote(activeAnalyser);
+            if (note !== lastPitchText) {
+              lastPitchText = note;
+              document.getElementById('pitchNoteDisplay').textContent = note;
+            }
+          }
+        } else if (!isPlaying && !isRecording) {
+          if (lastVuL !== 0) { lastVuL = 0; document.getElementById('vuLeft').style.width = '0%'; }
+          if (lastVuR !== 0) { lastVuR = 0; document.getElementById('vuRight').style.width = '0%'; }
+        }
+
+        // Stereo VU meters (zero allocation + dirty-checked DOM writes)
+        if (isPlaying && masterAnalyserL && masterAnalyserR) {
+          masterAnalyserL.getByteTimeDomainData(reusableTimeL);
+          masterAnalyserR.getByteTimeDomainData(reusableTimeR);
+          let sumL = 0, sumR = 0;
+          for (let i = 0; i < reusableTimeL.length; i++) {
+            const nl = (reusableTimeL[i] - 128) / 128;
+            const nr = (reusableTimeR[i] - 128) / 128;
+            sumL += nl * nl; sumR += nr * nr;
+          }
+          const lPct = Math.round(Math.min(100, Math.sqrt(sumL / reusableTimeL.length) * 260));
+          const rPct = Math.round(Math.min(100, Math.sqrt(sumR / reusableTimeR.length) * 260));
+          if (lPct !== lastVuL) { lastVuL = lPct; document.getElementById('vuLeft').style.width = `${lPct}%`; }
+          if (rPct !== lastVuR) { lastVuR = rPct; document.getElementById('vuRight').style.width = `${rPct}%`; }
+        } else if (isRecording && liveMicAnalyser) {
+          liveMicAnalyser.getByteTimeDomainData(reusableTimeL);
+          let sum = 0;
+          for (let i = 0; i < reusableTimeL.length; i++) {
+            const n = (reusableTimeL[i] - 128) / 128;
+            sum += n * n;
+          }
+          let peakVal = 0;
+          for (let i = 0; i < reusableTimeL.length; i++) {
+            const abs = Math.abs((reusableTimeL[i] - 128) / 128);
+            if (abs > peakVal) peakVal = abs;
+          }
+          const db = peakVal > 0.001 ? Math.round(20 * Math.log10(peakVal)) : -60;
+          const dbStr = `Peak: ${db <= -55 ? '-∞' : db} dB`;
+          if (dbStr !== lastPeakDbText) {
+            lastPeakDbText = dbStr;
+            const pEl = document.getElementById('peakDbDisplay');
+            if (pEl) pEl.textContent = dbStr;
+            const led = document.getElementById('clipLed');
+            if (led) {
+              led.className = peakVal > 0.92
+                ? 'text-[10px] font-bold px-2 py-0.5 rounded bg-red-600 border border-red-400 text-white'
+                : 'text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-900 border border-white/10 text-zinc-400';
+            }
+          }
+          const lvl = Math.round(Math.min(100, Math.sqrt(sum / reusableTimeL.length) * 260));
+          if (lvl !== lastVuL) {
+            lastVuL = lvl; lastVuR = lvl;
+            document.getElementById('vuLeft').style.width = `${lvl}%`;
+            document.getElementById('vuRight').style.width = `${lvl}%`;
+          }
+        }
+
+        // 2. Cached Static AudioBuffer Waveform (blitted in O(1))
+        if (currentBuffer && visualizerMode !== 1) {
+          if (waveCacheDirty) rebuildWaveformCache();
+
+          if (selStart > 0 || selEnd < 1) {
+            wCtx.fillStyle = 'rgba(147, 51, 234, 0.22)';
+            wCtx.fillRect(selStart * W, 0, (selEnd - selStart) * W, H);
+            wCtx.strokeStyle = '#ff2247';
+            wCtx.lineWidth = 2;
+            wCtx.beginPath();
+            wCtx.moveTo(selStart * W, 0); wCtx.lineTo(selStart * W, H);
+            wCtx.moveTo(selEnd * W, 0); wCtx.lineTo(selEnd * W, H);
+            wCtx.stroke();
+          }
+
+          wCtx.drawImage(cachedWaveCanvas, 0, 0);
+
+          // Draw Waveform Markers
+          if (waveMarkers.length > 0) {
+            wCtx.strokeStyle = 'rgba(192, 132, 252, 0.85)';
+            wCtx.lineWidth = 1.5;
+            waveMarkers.forEach(m => {
+              const mx = m.frac * W;
+              wCtx.beginPath(); wCtx.moveTo(mx, 0); wCtx.lineTo(mx, H); wCtx.stroke();
+              wCtx.fillStyle = '#9333ea';
+              wCtx.fillRect(mx - 4, 0, 8, 8);
+            });
+          }
+
+          // Playhead
+          let curPos = playOffset;
+          if (isPlaying && audioCtx) {
+            const rate = Math.max(0.25, Math.min(3.0, params.speed * Math.pow(2, params.pitch / 12)));
+            const elapsed = (audioCtx.currentTime - playStartTime) * rate;
+            const sSec = selStart * currentBuffer.duration;
+            const eSec = selEnd * currentBuffer.duration;
+            if (isLooping && eSec > sSec) {
+              curPos = sSec + ((playOffset - sSec + elapsed) % (eSec - sSec));
+            } else {
+              curPos = Math.min(currentBuffer.duration, playOffset + elapsed);
+            }
+            const tStr = formatTime(curPos);
+            if (tStr !== lastTimeText) {
+              lastTimeText = tStr;
+              document.getElementById('timeCurrent').textContent = tStr;
+            }
+          }
+          const px = (curPos / Math.max(0.01, currentBuffer.duration)) * W;
+          wCtx.strokeStyle = '#ff2247';
+          wCtx.lineWidth = 2.5;
+          wCtx.beginPath();
+          wCtx.moveTo(px, 0);
+          wCtx.lineTo(px, H);
+          wCtx.stroke();
+        }
+      }
+
+      // =========================================================================
+      // TABS & EVENT BINDINGS
+      // =========================================================================
+      function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          const isAct = b.dataset.tab === tabName;
+          b.classList.toggle('active', isAct);
+          b.classList.toggle('text-zinc-300', !isAct);
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => {
+          p.classList.toggle('hidden', p.id !== `tab-${tabName}`);
+        });
+      }
+
+      function loadDemoAudio() {
+        const buf = generateDemoAudioBuffer();
+        setNewBuffer(buf, 'عينة استوديو غنائية جاهزة للاختبار');
+        if (takesLibrary.length === 0) {
+          saveCurrentToTakes('العينة الاستوديو الافتراضية');
+        }
+      }
+
+      function initEventListeners() {
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        // Transport
+        document.getElementById('btnRecord').addEventListener('click', toggleRecording);
+        document.getElementById('btnPlayPause').addEventListener('click', () => {
+          if (isPlaying) {
+            if (audioCtx && currentBuffer) {
+              const rate = Math.max(0.25, Math.min(3.0, params.speed * Math.pow(2, params.pitch / 12)));
+              playOffset = Math.min(currentBuffer.duration, playOffset + (audioCtx.currentTime - playStartTime) * rate);
+            }
+            stopPlayback(false);
+          } else {
+            startPlayback();
+          }
+        });
+        document.getElementById('btnStop').addEventListener('click', () => stopPlayback(true));
+        document.getElementById('btnLoop').addEventListener('click', (e) => {
+          isLooping = !isLooping;
+          e.currentTarget.classList.toggle('active-purple', isLooping);
+          showToast(isLooping ? 'تم تفعيل التكرار التلقائي' : 'تم إيقاف التكرار التلقائي', 'purple');
+        });
+        document.getElementById('btnLoadDemo').addEventListener('click', () => {
+          loadDemoAudio();
+          showToast('تم تحميل العينة التجريبية — اضغط تشغيل لتجربة المؤثرات!', 'purple');
+        });
+
+        // File upload
+        document.getElementById('fileUploadInput').addEventListener('change', async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          try {
+            const ctx = ensureAudioCtx();
+            const ab = await file.arrayBuffer();
+            const decoded = await ctx.decodeAudioData(ab);
+            pushUndo();
+            setNewBuffer(decoded, file.name);
+            saveCurrentToTakes(file.name);
+            showToast(`تم تحميل الملف: ${file.name}`, 'purple');
+          } catch (err) {
+            showToast('تعذر قراءة الملف الصوتي، تأكد أنه بصيغة WAV/MP3/OGG', 'red');
+          }
+          e.target.value = '';
+        });
+
+        // Header controls
+        document.getElementById('btnMetronome').addEventListener('click', toggleMetronome);
+        document.getElementById('btnABCompare').addEventListener('click', (e) => {
+          isBypassed = !isBypassed;
+          document.getElementById('abCompareLabel').textContent = isBypassed ? 'الأصلي (بدون مؤثرات)' : 'المؤثرات: مفعلة';
+          e.currentTarget.classList.toggle('active-red', isBypassed);
+          if (isPlaying) startPlayback();
+        });
+        document.getElementById('btnExportWav').addEventListener('click', exportProcessedWav);
+        document.getElementById('btnToggleIO').addEventListener('click', (e) => {
+          const panel = document.getElementById('audioIOPanel');
+          const open = panel.classList.toggle('hidden') === false;
+          e.currentTarget.classList.toggle('active-purple', open);
+          if (open) refreshAudioDevices();
+        });
+        document.getElementById('btnRefreshDevices').addEventListener('click', () => {
+          refreshAudioDevices();
+          showToast('تم تحديث قائمة الميكروفونات والسماعات', 'purple');
+        });
+        document.getElementById('inputDeviceSelect').addEventListener('change', (e) => {
+          ioConfig.inputDeviceId = e.target.value;
+          showToast('تم اختيار مستقبل الصوت (الميكروفون)', 'purple');
+        });
+        document.getElementById('outputDeviceSelect').addEventListener('change', (e) => {
+          applyOutputSink(e.target.value);
+        });
+        document.getElementById('outputProfileSelect').addEventListener('change', (e) => {
+          ioConfig.outputProfile = e.target.value;
+          if (isPlaying) startPlayback();
+          showToast('تم تحديث معايرة مخرج الصوت!', 'purple');
+        });
+        document.getElementById('micGainSlider').addEventListener('input', (e) => {
+          const v = parseInt(e.target.value, 10);
+          ioConfig.micGain = v / 100;
+          document.getElementById('micGainVal').textContent = `${v}%`;
+        });
+        document.getElementById('chkEchoCancel').addEventListener('change', (e) => { ioConfig.echoCancellation = e.target.checked; });
+        document.getElementById('chkHwDenoise').addEventListener('change', (e) => { ioConfig.noiseSuppression = e.target.checked; });
+        document.getElementById('chkAutoGain').addEventListener('change', (e) => { ioConfig.autoGainControl = e.target.checked; });
+
+        // Visualizer mode
+        document.getElementById('btnVisualizerMode').addEventListener('click', (e) => {
+          visualizerMode = (visualizerMode + 1) % 3;
+          const names = ['طيف + موجة', 'الطيف فقط', 'الموجة فقط'];
+          e.currentTarget.textContent = names[visualizerMode];
+          needsRedraw = true;
+        });
+
+        // Waveform mouse selection & seek
+        const getFrac = (clientX) => {
+          const r = waveCanvas.getBoundingClientRect();
+          return Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+        };
+        let dragAnchor = 0;
+        waveCanvas.addEventListener('mousedown', (e) => {
+          if (!currentBuffer) return;
+          isDraggingSel = true;
+          dragAnchor = getFrac(e.clientX);
+          selStart = dragAnchor;
+          selEnd = dragAnchor;
+        });
+        window.addEventListener('mousemove', (e) => {
+          if (!isDraggingSel) return;
+          const cur = getFrac(e.clientX);
+          selStart = Math.min(dragAnchor, cur);
+          selEnd = Math.max(dragAnchor, cur);
+          updateSelectionBadge();
+        });
+        window.addEventListener('mouseup', () => {
+          if (!isDraggingSel) return;
+          isDraggingSel = false;
+          if (Math.abs(selEnd - selStart) < 0.012) {
+            playOffset = selStart * (currentBuffer ? currentBuffer.duration : 0);
+            selStart = 0; selEnd = 1;
+            if (isPlaying) startPlayback();
+          } else {
+            playOffset = selStart * (currentBuffer ? currentBuffer.duration : 0);
+          }
+          updateSelectionBadge();
+        });
+
+        // Touch support for waveform selection & seeking on mobile
+        waveCanvas.addEventListener('touchstart', (e) => {
+          if (!currentBuffer || !e.touches[0]) return;
+          isDraggingSel = true;
+          dragAnchor = getFrac(e.touches[0].clientX);
+          selStart = dragAnchor; selEnd = dragAnchor;
+          needsRedraw = true;
+        }, { passive: true });
+        waveCanvas.addEventListener('touchmove', (e) => {
+          if (!isDraggingSel || !e.touches[0]) return;
+          const cur = getFrac(e.touches[0].clientX);
+          selStart = Math.min(dragAnchor, cur);
+          selEnd = Math.max(dragAnchor, cur);
+          updateSelectionBadge();
+        }, { passive: true });
+        waveCanvas.addEventListener('touchend', () => {
+          if (!isDraggingSel) return;
+          isDraggingSel = false;
+          if (Math.abs(selEnd - selStart) < 0.012) {
+            playOffset = selStart * (currentBuffer ? currentBuffer.duration : 0);
+            selStart = 0; selEnd = 1;
+            if (isPlaying) startPlayback();
+          } else {
+            playOffset = selStart * (currentBuffer ? currentBuffer.duration : 0);
+          }
+          updateSelectionBadge();
+        });
+
+        // Waveform Edit buttons
+        document.getElementById('btnTrimKeep').addEventListener('click', applyTrimKeep);
+        document.getElementById('btnCutSelection').addEventListener('click', applyCutSelection);
+        document.getElementById('btnFadeIn').addEventListener('click', () => applyFade('in'));
+        document.getElementById('btnFadeOut').addEventListener('click', () => applyFade('out'));
+        document.getElementById('btnNormalize').addEventListener('click', applyNormalize);
+        document.getElementById('btnTrimSilence').addEventListener('click', applyTrimSilence);
+        document.getElementById('btnReverse').addEventListener('click', applyReverse);
+        document.getElementById('btnDuplicate').addEventListener('click', applyDuplicate);
+        document.getElementById('btnAutoLevel').addEventListener('click', applyAutoLeveler);
+        document.getElementById('btnNoiseGate').addEventListener('click', applyNoiseGate);
+        document.getElementById('btnVocalIsolate').addEventListener('click', applyVocalIsolator);
+        document.getElementById('btnAddMarker').addEventListener('click', addWaveformMarker);
+        document.getElementById('btnAutoMaster').addEventListener('click', runAiAutoMaster);
+        document.getElementById('btnUndo').addEventListener('click', applyUndo);
+
+        // Enhance & Voice Sliders
+        const sliderBindings = [
+          ['eq60', 'eq60', parseFloat],
+          ['eq250', 'eq250', parseFloat],
+          ['eq1000', 'eq1000', parseFloat],
+          ['eq4000', 'eq4000', parseFloat],
+          ['eq12000', 'eq12000', parseFloat],
+          ['denoiseSlider', 'denoise', parseFloat],
+          ['compressorSlider', 'compressor', parseFloat],
+          ['warmthSlider', 'warmth', parseFloat],
+          ['deesserSlider', 'deesser', parseFloat],
+          ['deplosiveSlider', 'deplosive', parseFloat],
+          ['exciterSlider', 'exciter', parseFloat],
+          ['stereoWidthSlider', 'stereoWidth', parseFloat],
+          ['pitchSlider', 'pitch', parseFloat],
+          ['reverbSlider', 'reverb', parseFloat],
+          ['delaySlider', 'delay', parseFloat],
+          ['delayTimeSlider', 'delayTime', parseFloat],
+          ['robotSlider', 'robot', parseFloat],
+          ['distortionSlider', 'distortion', parseFloat],
+          ['chorusSlider', 'chorus', parseFloat],
+          ['panSlider', 'pan', parseFloat],
+          ['playbackSpeed', 'speed', parseFloat],
+          ['masterVolume', 'volume', parseFloat]
+        ];
+        sliderBindings.forEach(([id, prop, parser, restartOnInput]) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener('input', () => {
+            params[prop] = parser(el.value);
+            syncSlidersFromParams();
+            if (restartOnInput && isPlaying) startPlayback();
+          });
+        });
+
+        // Enhance Presets
+        document.querySelectorAll('#enhancePresetGrid .preset-card').forEach(btn => {
+          btn.addEventListener('click', () => {
+            applyEnhancePreset(btn.dataset.enhancePreset);
+            showToast(`تم تفعيل قالب: ${btn.querySelector('.text-xs').textContent}`, 'purple');
+          });
+        });
+        document.getElementById('btnResetEnhance').addEventListener('click', () => {
+          applyEnhancePreset('clean');
+          showToast('تمت إعادة ضبط التحسين والمعادل', 'purple');
+        });
+
+        // Voice Presets
+        document.querySelectorAll('#voicePresetGrid .preset-card').forEach(btn => {
+          btn.addEventListener('click', () => {
+            applyVoicePreset(btn.dataset.voicePreset);
+            showToast(`تم تحويل الصوت إلى: ${btn.querySelector('.text-xs').textContent}`, 'red');
+          });
+        });
+        document.getElementById('btnResetVoice').addEventListener('click', () => {
+          applyVoicePreset('normal');
+          showToast('عاد الصوت إلى النبرة الطبيعية', 'purple');
+        });
+
+        // AI Assistant Chat & Voice Command
+        document.getElementById('btnAiVoiceCmd').addEventListener('click', startAiVoiceCommand);
+        document.getElementById('aiChatForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const input = document.getElementById('aiChatInput');
+          const val = input.value.trim();
+          if (!val) return;
+          input.value = '';
+          processAiCommand(val);
+        });
+        document.querySelectorAll('[data-ai-cmd]').forEach(btn => {
+          btn.addEventListener('click', () => processAiCommand(btn.dataset.aiCmd));
+        });
+        document.getElementById('btnAiUndo').addEventListener('click', () => {
+          if (!prevParamsSnapshot) {
+            showToast('لا يوجد تعديل سابق للتراجع عنه', 'red');
+            return;
+          }
+          params = { ...prevParamsSnapshot };
+          prevParamsSnapshot = null;
+          syncSlidersFromParams();
+          if (isPlaying) startPlayback();
+          appendAiMessage('تم التراجع عن آخر تعديل ذكي وإرجاع الإعدادات السابقة.', false, ['تراجع']);
+        });
+
+        // Music Composer controls
+        document.querySelectorAll('[data-lyric-sample]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.lyricSample;
+            document.getElementById('lyricsInput').value = LYRIC_SAMPLES[key] || '';
+            composeMusicFromLyrics(false);
+          });
+        });
+        document.getElementById('btnAiLyrics').addEventListener('click', generateAiLyrics);
+        document.getElementById('btnComposeMusic').addEventListener('click', () => composeMusicFromLyrics(true));
+        document.getElementById('btnPlayMusic').addEventListener('click', startMusicSequencer);
+        document.getElementById('btnRegenMelody').addEventListener('click', regenerateMelodyVariation);
+        document.getElementById('btnExportBeatWav').addEventListener('click', exportBeatWav);
+        document.getElementById('btnRecordOverMusic').addEventListener('click', () => {
+          if (!musicState.isPlaying) startMusicSequencer();
+          toggleRecording();
+        });
+        document.getElementById('btnMixVocalMusic').addEventListener('click', mixVocalWithGeneratedMusic);
+
+        document.getElementById('musicGenreSelect').addEventListener('change', (e) => {
+          musicState.genre = e.target.value;
+          if (musicState.isPlaying) { stopMusicSequencer(); startMusicSequencer(); }
+        });
+        document.getElementById('musicScaleSelect').addEventListener('change', (e) => {
+          musicState.scale = e.target.value;
+          document.getElementById('musicScaleBadge').textContent = SCALE_LABELS[musicState.scale] || musicState.scale;
+        });
+        document.getElementById('musicBpmSlider').addEventListener('input', (e) => {
+          musicState.bpm = parseInt(e.target.value, 10);
+          document.getElementById('musicBpmVal').textContent = `${musicState.bpm} BPM`;
+          document.getElementById('musicBpmBadge').textContent = `${musicState.bpm} BPM`;
+          if (musicState.isPlaying) { stopMusicSequencer(); startMusicSequencer(); }
+        });
+
+        [['mixDrums', 'drums', 'mixDrumsVal'], ['mixBass', 'bass', 'mixBassVal'], ['mixChords', 'chords', 'mixChordsVal'], ['mixMelody', 'melody', 'mixMelodyVal']].forEach(([id, key, valId]) => {
+          document.getElementById(id).addEventListener('input', (e) => {
+            musicState.mix[key] = parseInt(e.target.value, 10) / 100;
+            document.getElementById(valId).textContent = `${e.target.value}%`;
+          });
+        });
+
+        // Ambient Background Soundscapes
+        document.querySelectorAll('#ambientGrid [data-ambient]').forEach(btn => {
+          btn.addEventListener('click', () => toggleAmbient(btn.dataset.ambient));
+        });
+        document.getElementById('ambientVolume').addEventListener('input', (e) => {
+          const v = parseInt(e.target.value, 10);
+          ambientState.volume = v / 100;
+          document.getElementById('ambientVolumeVal').textContent = `${v}%`;
+          if (ambientState.gainNode && audioCtx) {
+            ambientState.gainNode.gain.setTargetAtTime(ambientState.volume * 0.45, audioCtx.currentTime, 0.03);
+          }
+        });
+
+        // Fast Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+          const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+          if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+          if (e.code === 'Space') {
+            e.preventDefault();
+            document.getElementById('btnPlayPause').click();
+          } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            applyUndo();
+          } else if (e.key.toLowerCase() === 'r' && !e.ctrlKey && !e.metaKey) {
+            toggleRecording();
+          } else if (e.key.toLowerCase() === 'l' && !e.ctrlKey && !e.metaKey) {
+            document.getElementById('btnLoop').click();
+          } else if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
+            toggleMetronome();
+          }
+        });
+
+        // Soundboard
+        document.querySelectorAll('[data-sfx]').forEach(btn => {
+          btn.addEventListener('click', () => triggerSfx(btn.dataset.sfx));
+        });
+
+        // Takes Library delegation
+        document.getElementById('btnSaveTake').addEventListener('click', () => {
+          saveCurrentToTakes(`نسخة محفوظة ${takesLibrary.length + 1}`);
+          showToast('تم حفظ المقطع في المكتبة', 'purple');
+        });
+        document.getElementById('takesList').addEventListener('click', (e) => {
+          const loadBtn = e.target.closest('[data-load-take]');
+          const delBtn = e.target.closest('[data-del-take]');
+          if (loadBtn) {
+            const take = takesLibrary.find(t => t.id === loadBtn.dataset.loadTake);
+            if (take) {
+              setNewBuffer(cloneAudioBuffer(take.buffer), take.name);
+              showToast(`تم تحميل: ${take.name}`, 'purple');
+            }
+          } else if (delBtn) {
+            takesLibrary = takesLibrary.filter(t => t.id !== delBtn.dataset.delTake);
+            renderTakesList();
+          }
+        });
+
+        // Teleprompter auto-scroll
+        document.getElementById('btnTogglePrompter').addEventListener('click', (e) => {
+          const ta = document.getElementById('prompterText');
+          if (prompterInterval) {
+            clearInterval(prompterInterval);
+            prompterInterval = null;
+            e.currentTarget.textContent = 'تشغيل التمرير';
+            e.currentTarget.classList.remove('active-purple');
+          } else {
+            ta.scrollTop = 0;
+            e.currentTarget.textContent = 'إيقاف التمرير';
+            e.currentTarget.classList.add('active-purple');
+            prompterInterval = setInterval(() => {
+              ta.scrollTop += 1;
+              if (ta.scrollTop + ta.clientHeight >= ta.scrollHeight) ta.scrollTop = 0;
+            }, 60);
+          }
+        });
+
+        window.addEventListener('resize', resizeWaveformCanvas);
+      }
+
+      // =========================================================================
+      // BOOTSTRAP ON LOAD
+      // =========================================================================
+      window.addEventListener('load', () => {
+        if (window.lucide) lucide.createIcons();
+        resizeWaveformCanvas();
+        initEventListeners();
+        syncSlidersFromParams();
+        composeMusicFromLyrics(false);
+        // Generate an instant ready-to-test audio clip safely
+        try {
+          loadDemoAudio();
+        } catch (e) {
+          // AudioContext may wait for user gesture in strict browsers; demo button handles it cleanly
+        }
+        drawLoop();
+      });
+    })();
+  </script>
+</body>
+</html>
